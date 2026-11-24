@@ -1,0 +1,1 @@
+{"ok":true,"env_keys":[],"db_keys":[],"ro_paths":["/api/metric_detail"],"endpoint":"/api/metric_detail","note":"DB 管理的 key 实时生效；env key 需改 oa_auth.env 后重启。"}

@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MES 运营管理</title>
+<style>
+  :root{--blue:#1f4e79;--blue2:#2e6da4;--ink:#222;--line:#d9e2ec;--bg:#f4f7fb;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;color:var(--ink);
+       background:var(--bg);font-size:13px;line-height:1.55;}
+  header{background:linear-gradient(90deg,#173d61,var(--blue2));color:#fff;padding:14px 24px;
+         display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+         box-shadow:0 1px 4px rgba(0,0,0,.12);}
+  header h1{margin:0;font-size:18px;font-weight:600;letter-spacing:1px;}
+  a.home-btn{display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none;
+             border:1px solid rgba(255,255,255,.65);padding:6px 14px;border-radius:6px;
+             font-size:13px;white-space:nowrap;cursor:pointer;transition:all .15s;}
+  a.home-btn:hover{background:#fff;color:var(--blue);border-color:#fff;}
+  .wrap{max-width:1120px;margin:0 auto;padding:22px 24px 64px;}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 22px;
+         box-shadow:0 1px 4px rgba(31,78,121,.07);}
+  .row{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:6px;}
+  label{display:block;font-size:12px;color:#555;margin-bottom:4px;}
+  input,select{padding:7px 10px;border:1px solid var(--line);border-radius:6px;font-size:13px;
+               font-family:inherit;background:#fff;}
+  input:focus,select:focus{outline:none;border-color:var(--blue2);
+               box-shadow:0 0 0 2px rgba(46,109,164,.15);}
+  button{background:var(--blue);color:#fff;border:none;padding:9px 20px;border-radius:6px;
+          font-size:14px;cursor:pointer;font-family:inherit;
+          box-shadow:0 1px 2px rgba(31,78,121,.25);transition:background .15s;}
+  button:hover{background:var(--blue2);}
+  button:disabled{background:#aaa;cursor:not-allowed;box-shadow:none;}
+  .sech{margin:28px 0 12px;font-size:15px;font-weight:600;color:var(--blue);
+        border-left:4px solid var(--blue);padding-left:10px;}
+  table{border-collapse:separate;border-spacing:0;width:100%;background:#fff;margin-top:8px;
+        border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  th,td{border:none;border-bottom:1px solid #e8eef5;padding:10px 12px;text-align:left;
+        font-size:12.5px;vertical-align:middle;}
+  th{background:#f0f5fa;color:#40607f;font-weight:600;white-space:nowrap;}
+  tbody tr:nth-child(even){background:#fafcfe;}
+  tbody tr{transition:background .12s;}
+  tbody tr:hover{background:#f2f7fc;}
+  td a.btn, td button{white-space:nowrap;}
+  .muted{color:#98a4b1;font-size:12px;}
+  #msg{margin-top:10px;font-size:13px;min-height:18px;}
+  .ok{color:#2e7d32;} .err{color:#c62828;}
+
+  /* ---- 操作按钮：统一同规格「浅底 + 彩色字 + 细边框」，hover 变实底 ---- */
+  a.btn,button.mini{display:inline-block;color:#2e6da4;background:#f3f8fd;border:1px solid #bcd0e2;
+        padding:5px 13px;border-radius:6px;text-decoration:none;font-size:12px;margin:2px 5px 2px 0;
+        cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s;line-height:1.5;}
+  a.btn:hover{background:var(--blue2);border-color:var(--blue2);color:#fff;}
+  a.btn.arch{color:#1b7a3d;background:#f0f9f1;border-color:#bfe0c4;}
+  a.btn.arch:hover{background:#2e7d32;border-color:#2e7d32;color:#fff;}
+  button.mini{color:#51677d;background:#f5f8fb;border-color:#cdd8e4;}
+  button.mini:hover{background:#3f5872;border-color:#3f5872;color:#fff;}
+  button.mini.warn{color:#c62828;background:#fdf1f1;border-color:#f0c4c4;}
+  button.mini.warn:hover{background:#c62828;border-color:#c62828;color:#fff;}
+
+  .tag{display:inline-block;background:#eef6ee;color:#2e7d32;border:1px solid #cfe6cf;
+       border-radius:10px;padding:1px 8px;font-size:11.5px;margin-left:6px;white-space:nowrap;}
+  .archbox{margin-top:8px;}
+  .archbox summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--blue);
+                   padding:6px 0;outline:none;}
+
+.rstbtn{background:#fff3e0;border:1px solid #f0b46a;color:#a45a00;
+  padding:6px 14px;border-radius:5px;font-size:13px;cursor:pointer;font-family:inherit}
+.rstbtn:hover{background:#ffe6c7}
+.rstbtn.busy{background:#eee;color:#888;border-color:#ddd;cursor:wait}
+.rstlog{font-size:12.5px;margin-top:8px;line-height:1.7}
+.rstlog .ok{color:#1b7a3d}.rstlog .err{color:#c62828}
+
+  /* ---- 意见反馈 & 更新公告（2026-10-10）---- */
+  textarea{padding:7px 10px;border:1px solid var(--line);border-radius:6px;font-size:13px;
+           font-family:inherit;color:var(--ink);background:#fff;resize:vertical;line-height:1.6;width:100%;}
+  textarea:focus{outline:none;border-color:var(--blue2);box-shadow:0 0 0 2px rgba(46,109,164,.15);}
+  button.mini.sel{background:#3f5872;border-color:#3f5872;color:#fff;font-weight:600;}
+  .fbtn{display:inline-flex;align-items:center;gap:5px;margin:0;cursor:pointer;}
+  .st{display:inline-block;border-radius:10px;padding:1px 9px;font-size:11.5px;white-space:nowrap;border:1px solid;}
+  .st-open{color:#a45a00;background:#fff7ec;border-color:#f0d9a8;}
+  .st-done{color:#1b7a3d;background:#f0f9f1;border-color:#cfe6cf;}
+  .st-rej{color:#7a8794;background:#f3f6f9;border-color:#d7dfe8;}
+  .fb-inline{display:flex;gap:6px;align-items:center;margin-top:4px;}
+  .fb-inline input{flex:1;min-width:120px;}
+  .fb-cnt{font-size:11.5px;color:#98a4b1;}
+  .fb-body{white-space:pre-wrap;word-break:break-word;min-width:240px;}
+  #fbList td button.mini{white-space:nowrap;}
+  #fbList td:nth-child(2){white-space:nowrap;}
+
+  /* ---- 功能页签栏（2026-10-10 elen：后台按功能分区）---- */
+  nav.tabs{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);
+    display:flex;gap:8px;padding:10px 24px;flex-wrap:wrap;box-shadow:0 1px 4px rgba(31,78,121,.06);}
+  .atab{position:relative;display:inline-flex;align-items:center;gap:6px;
+    border:1px solid var(--line);background:#fff;color:#51677d;
+    border-radius:18px;padding:7px 16px;font-size:13.5px;cursor:pointer;font-family:inherit;
+    transition:all .15s;line-height:1.4;}
+  .atab:hover{border-color:var(--blue2);color:var(--blue);transform:translateY(-1px);}
+  .atab.sel{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600;
+    box-shadow:0 2px 8px rgba(31,78,121,.28);}
+  .atab .tdot{display:none;position:absolute;top:-5px;right:-6px;min-width:16px;height:16px;padding:0 3px;
+    background:#e64b3c;color:#fff;border-radius:8px;font-size:10px;font-style:normal;font-weight:700;
+    line-height:16px;text-align:center;border:1.5px solid #fff;font-variant-numeric:tabular-nums;}
+  .atab .tdot.on{display:block;}
+  /* SF Symbols 风线性图标（2026-10-10 elen：emoji 太丑，统一苹果风描边图标，
+     currentColor 随未选中/选中自动灰/白） */
+  .atab svg,.home-btn svg,.btn svg{width:15px;height:15px;flex:none;fill:none;
+    stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+  .home-btn svg,.btn svg{width:14px;height:14px;margin-right:2px;vertical-align:-2px;}
+  .tabpane{animation:paneIn .18s ease;}
+  @keyframes paneIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .tscroll{overflow-x:auto;}
+  .empty{padding:34px 20px;text-align:center;color:#98a4b1;font-size:13px;line-height:1.9;}
+
+  /* ---- 轻提示 & 自定义确认弹窗（替代原生 alert/confirm）---- */
+  .aToast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%) translateY(14px);z-index:9500;
+    background:rgba(31,45,61,.95);color:#fff;border-radius:8px;padding:10px 20px;font-size:13px;
+    opacity:0;pointer-events:none;transition:.25s;max-width:86vw;box-shadow:0 8px 24px rgba(0,0,0,.25);}
+  .aToast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+  .aToast.bad{background:rgba(178,38,38,.95);}
+  .aToast.ok{background:rgba(27,122,61,.95);}
+  .cfmMask{position:fixed;inset:0;background:rgba(20,28,40,.45);z-index:9600;display:none;
+    align-items:flex-start;justify-content:center;padding:80px 18px 24px;overflow:auto;}
+  .cfmMask.open{display:flex;}
+  .cfmCard{background:#fff;border-radius:12px;max-width:470px;width:100%;
+    box-shadow:0 14px 44px rgba(0,0,0,.3);padding:22px 24px 18px;animation:cfmPop .18s ease;}
+  @keyframes cfmPop{from{transform:translateY(10px);opacity:.6}to{transform:none;opacity:1}}
+  .cfmCard h4{margin:0 0 8px;font-size:15px;color:var(--ink);}
+  .cfmCard .cfmMsg{font-size:13px;color:#44586c;line-height:1.75;white-space:pre-wrap;}
+  .cfmFt{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
+  .cfmFt button{padding:7px 18px;font-size:13px;}
+  .cfmFt .ghost{background:#fff;color:#51677d;border:1px solid var(--line);box-shadow:none;}
+  .cfmFt .ghost:hover{border-color:var(--blue2);color:var(--blue);background:#fff;}
+  .cfmFt .danger{background:#c62828;}
+  .cfmFt .danger:hover{background:#d94040;}
+  .calCard{max-width:760px;width:100%;}
+  .calCard label{display:block;font-size:12px;color:#555;margin-bottom:4px;}
+  .chItem{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:10px;background:#fafcfe;}
+  .chItem .chH{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;}
+  .chItem .chH b{color:var(--blue);font-size:13px;}
+  .chItem .chB{font-size:12px;color:#51677d;margin-top:6px;line-height:1.7;}
+  .chItem .chNote{font-size:12px;color:#a45a00;margin-top:4px;}
+  #calList td:nth-child(2) code{font-size:11.5px;color:#51677d;background:#f0f5fa;
+    border:1px solid var(--line);border-radius:4px;padding:1px 6px;}
+  /* MES 源库账号表（2026-11-16） */
+  #mcList td,#mcList th{font-size:12px;padding:8px 10px;white-space:nowrap;}
+  #mcList td:nth-child(2),#mcList td:nth-child(3){font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:11.5px;color:#51677d;}
+  #mcList td button.mini{margin-right:4px;}
+
+  /* ---- 开发文档（2026-10-10）---- */
+  .sysGrid{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 4px;}
+  .sysCell{border:1px solid var(--line);background:#fafcfe;border-radius:8px;padding:8px 14px;
+    font-size:12.5px;line-height:1.7;}
+  .sysCell label,.sysLab{display:block;font-size:11px;color:#7a8794;margin-bottom:2px;}
+  .sysCell code{font-size:12px;color:var(--blue);}
+  .devTbl td,.devTbl th{font-size:12px;padding:8px 10px;}
+  .devTbl td code{font-size:11.5px;color:#2f6fad;background:#eef4fb;border:1px solid #d5e5f5;
+    border-radius:4px;padding:0 5px;white-space:nowrap;}
+  .devTbl .grp{background:#f0f5fa;font-weight:700;color:var(--blue);}
+  .archBox{overflow-x:auto;}
+  .archBox svg{min-width:900px;display:block;margin:6px auto 0;}
+  .devNote{font-size:12px;color:#7a8794;line-height:1.8;margin-top:8px;}
+  /* 内嵌分区页签（2026-10-12 分类重理：账号与角色 / 据点范围 / 日志与审计 提升为一级页签，
+     内嵌页自带页头与子页签已由 users.html 的 embed 模式隐藏，控制台只保留这一层导航） */
+  .tabpane .embedWrap{padding:0;}
+  .embedFrame{display:block;width:100%;height:calc(100vh - 128px);min-height:480px;
+    border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 1px 4px rgba(31,78,121,.07);}
+  .acctGuide{padding:40px 30px;text-align:center;color:#51677d;font-size:13.5px;line-height:2;}
+  .acctGuide b{font-size:15px;color:var(--ink);}
+</style>
+</head>
+<body><div style="position:fixed;top:0;left:0;right:0;z-index:7999;pointer-events:none;text-align:center;padding:2px 0;background:#b45309;color:#fff;font-size:13px;letter-spacing:1px;font-weight:600;opacity:.92">【测试环境·预发 18123】数据每日 07:05 快照同步自生产 · 验证通过后复制文件发布 8123</div>
+<header><h1>MES 运营管理</h1>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <!-- 2026-10-10 elen：填报/汇总入口提到页头常驻（原先只在系统运维页签的角落卡里，太深） -->
+    <a class="home-btn" href="http://192.168.2.149:8124/monthly" target="_blank" rel="noopener"
+       title="月度数据填报表单（8124）：业务方填报整改措施与原因分析"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5H6.5A1.5 1.5 0 0 0 5 6.5v13A1.5 1.5 0 0 0 6.5 21H13"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L12 14l-3.5 1L9.5 11.5z"/></svg>填报表单</a>
+    <a class="home-btn" href="http://192.168.2.149:8124/review" target="_blank" rel="noopener"
+       title="月度汇总查看（8124）：收集查看各事业部填报情况"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>汇总查看</a>
+    <a class="home-btn" href="/live"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>返回看板</a>
+  </div>
+</header>
+<nav class="tabs" id="admTabs" aria-label="功能分区">
+  <button class="atab sel" data-tab="reports"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h8l4 4v12a1.5 1.5 0 0 1-1.5 1.5H7a1.5 1.5 0 0 1-1.5-1.5V5a1.5 1.5 0 0 1 1.5-1.5z"/><path d="M14.5 3.5v4h4"/><path d="M9.5 16.5v-3.5M12.5 16.5v-5.5M15.5 16.5v-2"/></svg>报告管理</button>
+  <button class="atab" data-tab="fb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11.7a8 8 0 0 1-8 8c-1.2 0-2.4-.3-3.4-.8L3.5 20.5l1.6-5.6a8 8 0 1 1 15.4-3.2z"/><path d="M8.7 11.7h.01M12.5 11.7h.01M16.3 11.7h.01" stroke-width="2.6"/></svg>意见反馈<i class="tdot" id="tabFbDot"></i></button>
+  <button class="atab" data-tab="upd"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8.5a6 6 0 0 0-12 0c0 6.5-2.8 8.5-2.8 8.5h17.6S18 15 18 8.5"/><path d="M13.7 20.5a2 2 0 0 1-3.4 0"/></svg>更新公告</button>
+  <button class="atab" data-tab="cal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19A2.5 2.5 0 0 1 6.5 16.5H20V4.5a1 1 0 0 0-1-1H6.5A2.5 2.5 0 0 0 4 6v13z"/><path d="M4 19a2.5 2.5 0 0 0 2.5 2.5H20v-5"/><path d="M8.5 8.5h7M8.5 11.5h5"/></svg>口径说明</button>
+  <button class="atab" data-tab="dev"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8.5-4.5 3.5L8 15.5M16 8.5l4.5 3.5L16 15.5M13.5 5l-3 14"/></svg>开发文档</button>
+  <button class="atab" data-tab="api"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 6.5h7M8.5 17.5h7M4.5 9.5v5M19.5 9.5v5"/><path d="M8.5 12h7"/></svg>API 接口</button>
+  <button class="atab" data-tab="acct"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8.4" r="3.2"/><path d="M3.4 19.4a5.8 5.8 0 0 1 11.2 0"/><path d="M16.2 6.6a3 3 0 0 1 0 5.6M17.6 19.4a5.6 5.6 0 0 0-2.2-4.4"/></svg>账号与角色</button>
+  <button class="atab" data-tab="div"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6.8-6 6.8-11A6.8 6.8 0 1 0 5.2 10c0 5 6.8 11 6.8 11z"/><circle cx="12" cy="9.8" r="2.5"/></svg>据点范围</button>
+  <button class="atab" data-tab="log"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.4" y="4.6" width="17.2" height="14.8" rx="2.2"/><path d="M7 9.4l2.4 2.4L7 14.2M12.2 15.2h4.6"/></svg>日志与审计</button>
+  <button class="atab" data-tab="sys"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h9M19.5 7.5H20M4 16.5h3.5M14 16.5h6"/><circle cx="16" cy="7.5" r="2.4"/><circle cx="10.5" cy="16.5" r="2.4"/></svg>系统运维</button>
+</nav>
+<div class="wrap">
+<div class="tabpane" id="pane-reports">
+  <div class="panel" style="border-color:#bcd;">
+    <div class="sech" style="margin-top:0">数据同步（本地库 mes.db）</div>
+    <div class="row">
+      <div>数据截至：<b id="de">—</b></div>
+      <div>最近同步：<b id="ls">—</b></div>
+      <div>状态：<b id="st">—</b></div>
+      <div><button id="sync">立即同步</button></div>
+    </div>
+    <div id="synmsg" class="muted" style="margin-top:8px">每日 06:30 自动同步；也可点此立即从 5 个 MES 源库（三厂 + 智能注塑并入C事业部 OEE + D事业部）拉取最新月度数据。
+      需要「改完密码后补数」请到<b>系统运维 → 日更同步状态 → 立即重跑日更补数</b>（那里能选补数天数）。</div>
+  </div>
+
+  <div class="panel">
+    <div class="sech" style="margin-top:0">生成报告</div>
+    <div class="row">
+      <div><label>统计月份</label><input type="month" id="month"></div>
+      <div><label>报告范围</label>
+        <select id="div">
+          <option value="all">全厂（全部事业部）</option>
+          <option value="div_a">A事业部事业部</option>
+          <option value="div_c">C事业部事业部</option>
+          <option value="div_b">B事业部事业部</option>
+        </select>
+      </div>
+      <div><button id="gen">一键生成报告</button></div>
+    </div>
+    <div id="msg"></div>
+    <div class="muted" style="margin-top:10px">
+      生成结果是一份<b>独立 HTML 报告</b>（数据内联，可离线打开 / 分享）。<b>版式按范围自动匹配</b>：<br>
+      · <b>全厂</b>（全部事业部）→ 仪表盘式，顶栏导航 + 明暗主题 + 内联 SVG 走势；<br>
+      · <b>单个事业部</b> → 分页式（16:9 页 + 右侧圆点导航 + ECharts 图表）。<br>
+      两种版式均支持在页面内<b>直接点选文字修改</b>，改完点「下载修改版」导出。<br>
+      <span style="color:#b06a00">D事业部暂未接入月度报告生成</span>（该厂报告模板未做）；如需给D事业部归档留档，请用下方「自行导入留档」。
+    </div>
+  </div>
+
+  <div class="sech">已生成报告</div>
+  <table id="list">
+    <thead><tr><th>月份</th><th>范围</th><th>生成时间</th><th>留档</th><th style="width:330px">操作</th></tr></thead>
+    <tbody><tr><td colspan="5" class="muted">加载中…</td></tr></tbody>
+  </table>
+  <div class="muted" style="margin-top:8px">
+    <b>留档</b>＝把当前版本存一份带时间戳的定稿快照（<code>generated/archive/月份/</code>），
+    之后「重新生成」同月报告只更新工作版，<b>留档副本不受影响</b>；同一份最多保留 50 个快照。<br>
+    <b>删除</b>＝移除列表记录并删掉工作版 HTML（有二次确认），留档副本保留，需在下方单独删。
+  </div>
+
+  <div class="sech">自行导入留档</div>
+  <div class="panel" style="background:#fafcff">
+    <div class="row">
+      <div><label>统计月份</label><input type="month" id="impMonth"></div>
+      <div><label>事业部</label>
+        <select id="impDiv">
+          <option value="all">全厂（全部事业部）</option>
+          <option value="div_a">A事业部事业部</option>
+          <option value="div_c">C事业部事业部</option>
+          <option value="div_b">B事业部事业部</option>
+          <option value="div_d">D事业部</option>
+        </select>
+      </div>
+      <div><label>报告文件（.html / .htm / .pdf）</label><input type="file" id="impFile" accept=".html,.htm,.pdf"></div>
+      <div style="padding-bottom:6px"><button id="impBtn">⬆ 导入留档</button></div>
+    </div>
+    <div class="muted" style="margin-top:6px">
+      把本地已导出的报告（如「下载修改版」的定稿、浏览器打印出的 <b>PDF</b>、或历史报告）导入到留档区，按所选<b>月份 + 事业部</b>归档，
+      与系统留档快照一样可预览 / 下载 / 单独删除（PDF 预览用浏览器内置查看器）；文件名会自动加上传时间戳，避免覆盖同名文件。
+    </div>
+  </div>
+
+  <details class="archbox" id="archBox" open>
+    <summary>留档副本（定稿快照）<span id="archCnt" class="tag">0 份</span></summary>
+    <table id="archList">
+      <thead><tr><th>月份</th><th>范围</th><th>留档时间</th><th>大小</th><th style="width:240px">操作</th></tr></thead>
+      <tbody><tr><td colspan="5" class="muted">暂无留档</td></tr></tbody>
+    </table>
+  </details>
+
+  <div class="sech">分析内容维护</div>
+  <div class="panel" style="background:#fafcff">
+    <div class="muted">
+      <b>已生效：</b>报告中的「数据事实」「关键发现」「分析研判」「本月议题」当前由指标数据<b>自动生成初稿</b>
+      （含最低/最高事业部、最弱车间线体、环比与趋势方向），在报告页面内<b>点选即可改写</b>，
+      改完用「下载修改版」导出定稿，无需回到本界面。<br>
+      <b>规划中：</b>把改好的定稿回存到本界面按月归档，供下月报告自动引用「上月问题回顾」。
+    </div>
+  </div>
+</div><!-- /pane-reports -->
+
+<div class="tabpane" id="pane-fb" hidden>
+<section class="panel" id="fbSec" style="margin-top:0">
+  <div class="sech" style="margin-top:0">意见反馈
+    <span id="fbOpenTag" class="st st-open" style="margin-left:8px">待处理 0</span></div>
+  <div class="muted" style="margin-bottom:10px">前台页面右下角「💬 提意见」收集来的反馈。<b>待处理</b>的排前；
+    处理或暂不处理时请写一句结果说明，便于回溯。</div>
+  <div class="row" style="margin-bottom:4px" id="fbTabs">
+    <button class="mini sel" data-fbst="open">待处理</button>
+    <button class="mini" data-fbst="done">已处理</button>
+    <button class="mini" data-fbst="rejected">暂不处理</button>
+    <button class="mini" data-fbst="all">全部</button>
+    <span class="fb-cnt" id="fbCnt"></span>
+  </div>
+  <div class="tscroll"><table id="fbList">
+    <thead><tr><th style="width:132px">提交时间</th><th style="width:72px">类型</th>
+      <th style="width:88px">提交人</th><th>内容 · 处理结果</th><th style="width:80px">状态</th>
+      <th style="width:224px">操作</th></tr></thead>
+    <tbody><tr><td colspan="6" class="muted">加载中…</td></tr></tbody>
+  </table></div>
+</section>
+</div><!-- /pane-fb -->
+
+<div class="tabpane" id="pane-upd" hidden>
+<section class="panel" id="updSec" style="margin-top:0">
+  <div class="sech" style="margin-top:0">更新公告
+    <span id="updPubTag" class="tag" style="margin-left:8px">已发布 0 条</span></div>
+  <div class="muted" style="margin-bottom:10px">发布后出现在<b>看板前台页头右上「🔔 铃铛」</b>里，
+    未读用户会有红点提示；只发布<b>业务方能看懂</b>的变化（改了什么 + 有什么用），误发可即时「隐藏」。</div>
+  <div class="row" style="align-items:flex-end">
+    <div><label>类型</label>
+      <select id="upKind">
+        <option>新功能</option><option>优化</option><option>修复</option><option>公告</option>
+      </select></div>
+    <div><label>展示日期</label><input type="date" id="upDate"></div>
+    <div style="flex:1;min-width:220px"><label id="upTitleLab">标题</label>
+      <input id="upTitle" maxlength="120" placeholder="例：OEE 卡片新增「剔除异常均值」展示"></div>
+  </div>
+  <div style="margin-top:2px"><label>内容（可留空）</label>
+    <textarea id="upBody" rows="3" maxlength="4000"
+      placeholder="一两句话说清楚：改了哪里、口径/用法有什么变化、对看数有什么影响。"></textarea></div>
+  <div class="row" style="margin-top:10px">
+    <label class="fbtn"><input type="checkbox" id="upPub" checked style="width:auto;margin:0"> 立即发布</label>
+    <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+      <span id="upMsg" class="fb-cnt"></span>
+      <button class="mini" id="upCancel" style="display:none">取消编辑</button>
+      <button id="upSave">发布公告</button>
+    </div>
+  </div>
+  <div class="sech" style="font-size:14px;margin:20px 0 4px">公告列表</div>
+  <div class="tscroll"><table id="updList">
+    <thead><tr><th style="width:110px">日期</th><th style="width:64px">类型</th><th>标题 · 内容</th>
+      <th style="width:70px">状态</th><th style="width:170px">操作</th></tr></thead>
+    <tbody><tr><td colspan="5" class="muted">加载中…</td></tr></tbody>
+  </table></div>
+</section>
+</div><!-- /pane-upd -->
+
+<div class="tabpane" id="pane-cal" hidden>
+<section class="panel" id="calSec" style="margin-top:0">
+  <div class="sech" style="margin-top:0">口径说明
+    <span id="calCntTag" class="tag" style="margin-left:8px">0 条</span></div>
+  <div class="muted" style="margin-bottom:12px">「前台简述」展示在看板各指标<b>就地「?」弹层</b>里，一句话说清取值逻辑；
+    「完整逻辑」在此留档。<b>保存必填变更说明</b>，每次保存生成新版本，历史可查看、可回退。前台刷新即生效。</div>
+  <div class="row" style="margin-bottom:2px"><button id="calAdd">＋ 新增口径条目</button></div>
+  <div class="tscroll"><table id="calList">
+    <thead><tr><th style="width:150px">名称</th><th style="width:130px">标识</th><th>前台简述</th>
+      <th style="width:52px">版本</th><th style="width:124px">最后更新</th><th style="width:128px">操作</th></tr></thead>
+    <tbody><tr><td colspan="6" class="muted">加载中…</td></tr></tbody>
+  </table></div>
+</section>
+</div><!-- /pane-cal -->
+
+<div class="tabpane" id="pane-dev" hidden>
+<section class="panel" style="margin-top:0">
+  <div class="sech" style="margin-top:0">实时状态 · 当前实例
+    <button class="mini" id="sysRef" style="margin-left:10px">↻ 刷新</button></div>
+  <div id="sysLive" class="muted">加载中…</div>
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="sech" style="margin-top:0">系统架构（2026-10-10）</div>
+  <div class="archBox">
+  <svg viewBox="0 0 1040 560" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="12">
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0L10 5L0 10z" fill="#5b7085"/>
+      </marker>
+      <marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0L10 5L0 10z" fill="#1b7a3d"/>
+      </marker>
+    </defs>
+    <!-- 列标题 -->
+    <text x="200" y="18" text-anchor="middle" fill="#7a8794" font-weight="700">接 入</text>
+    <text x="520" y="18" text-anchor="middle" fill="#7a8794" font-weight="700">服务层 · 149（P-MES-BGETL）</text>
+    <text x="850" y="18" text-anchor="middle" fill="#7a8794" font-weight="700">数据层（各实例目录内）</text>
+    <!-- 接入层 -->
+    <rect x="105" y="30" width="190" height="50" rx="8" fill="#fff" stroke="#8fa3b8"/>
+    <text x="200" y="51" text-anchor="middle" font-weight="600">浏览器（内网用户）</text>
+    <text x="200" y="68" text-anchor="middle" fill="#7a8794" font-size="11">看板 /live · 后台 /admin</text>
+    <rect x="105" y="112" width="190" height="52" rx="8" fill="#fff" stroke="#8fa3b8"/>
+    <text x="200" y="133" text-anchor="middle" font-weight="600">nginx 反代 · 187</text>
+    <text x="200" y="150" text-anchor="middle" fill="#7a8794" font-size="11">oa.yuelicn.com:8123 → 8123（生产门户）</text>
+    <line x1="200" y1="80" x2="200" y2="112" stroke="#5b7085" marker-end="url(#ar)"/>
+    <!-- 服务层 -->
+    <rect x="400" y="30" width="240" height="96" rx="8" fill="#eef4fb" stroke="#1f4e79" stroke-width="1.5"/>
+    <text x="520" y="52" text-anchor="middle" font-weight="700" fill="#1f4e79">8123 生产看板</text>
+    <text x="520" y="70" text-anchor="middle" font-size="11" fill="#51677d">C:\mes_dashboard · FastAPI main.py</text>
+    <text x="520" y="86" text-anchor="middle" font-size="11" fill="#51677d">KeepAlive 常驻守护</text>
+    <text x="520" y="102" text-anchor="middle" font-size="11" fill="#51677d">ETL_Daily 06:30 全量重建</text>
+    <rect x="400" y="152" width="240" height="96" rx="8" fill="#fff7ec" stroke="#b45309" stroke-width="1.5"/>
+    <text x="520" y="174" text-anchor="middle" font-weight="700" fill="#a45a00">18123 测试看板（预发）</text>
+    <text x="520" y="192" text-anchor="middle" font-size="11" fill="#7a5a2b">C:\mes_dashboard_test · 免登录+假管理员</text>
+    <text x="520" y="208" text-anchor="middle" font-size="11" fill="#7a5a2b">DashboardTest_KeepAlive</text>
+    <text x="520" y="224" text-anchor="middle" font-size="11" fill="#7a5a2b">Test_Dbsync 07:05 快照同步</text>
+    <rect x="400" y="276" width="240" height="64" rx="8" fill="#fff" stroke="#1f4e79"/>
+    <text x="520" y="298" text-anchor="middle" font-weight="700" fill="#1f4e79">8124 月度填报</text>
+    <text x="520" y="316" text-anchor="middle" font-size="11" fill="#51677d">C:\mes_monthly · Monthly_KeepAlive</text>
+    <text x="520" y="330" text-anchor="middle" font-size="11" fill="#51677d">与 8123 共用 oa_users.json 权限</text>
+    <!-- 接入箭头 -->
+    <line x1="295" y1="138" x2="396" y2="78" stroke="#5b7085" marker-end="url(#ar)"/>
+    <line x1="297" y1="55" x2="396" y2="190" stroke="#5b7085" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+    <text x="330" y="150" font-size="10.5" fill="#7a8794">内网直连</text>
+    <!-- 数据层 -->
+    <rect x="740" y="40" width="200" height="52" rx="8" fill="#f0f9f1" stroke="#1b7a3d"/>
+    <text x="840" y="61" text-anchor="middle" font-weight="600" fill="#1b7a3d">mes.db（生产）</text>
+    <text x="840" y="78" text-anchor="middle" font-size="11" fill="#51677d">指标长表 + meta</text>
+    <rect x="740" y="116" width="200" height="52" rx="8" fill="#f0f9f1" stroke="#1b7a3d"/>
+    <text x="840" y="137" text-anchor="middle" font-weight="600" fill="#1b7a3d">mes.db（测试副本）</text>
+    <text x="840" y="154" text-anchor="middle" font-size="11" fill="#51677d">每日快照覆盖，勿存业务数据</text>
+    <rect x="740" y="196" width="200" height="52" rx="8" fill="#f0f9f1" stroke="#1b7a3d"/>
+    <text x="840" y="217" text-anchor="middle" font-weight="600" fill="#1b7a3d">feedback.db</text>
+    <text x="840" y="234" text-anchor="middle" font-size="11" fill="#51677d">意见 / 公告 / 口径+版本</text>
+    <rect x="740" y="276" width="240" height="60" rx="8" fill="#fff" stroke="#8fa3b8"/>
+    <text x="860" y="297" text-anchor="middle" font-size="11.5" fill="#51677d">staffing.db · auth_audit.db</text>
+    <text x="860" y="314" text-anchor="middle" font-size="11.5" fill="#51677d">oa_users.json · oa_auth.env（凭据）</text>
+    <!-- 服务→数据 -->
+    <line x1="640" y1="70" x2="736" y2="66" stroke="#1b7a3d" marker-end="url(#arG)"/>
+    <line x1="640" y1="200" x2="736" y2="216" stroke="#1b7a3d" marker-end="url(#arG)"/>
+    <line x1="840" y1="92" x2="840" y2="112" stroke="#5b7085" marker-end="url(#ar)"/>
+    <text x="852" y="108" font-size="10.5" fill="#7a8794">07:05 backup API 快照</text>
+    <!-- 外部数据源 -->
+    <rect x="60" y="440" width="230" height="72" rx="8" fill="#fff5e6" stroke="#b06a00"/>
+    <text x="175" y="462" text-anchor="middle" font-weight="600" fill="#b06a00">MES SQL Server × 5 源库</text>
+    <text x="175" y="479" text-anchor="middle" font-size="11" fill="#8a6a3a">A事业部 / B事业部 / C事业部（含智能注塑库）</text>
+    <text x="175" y="495" text-anchor="middle" font-size="11" fill="#8a6a3a">+ D事业部（PCB，独立库 / 专用 SP）</text>
+    <rect x="330" y="440" width="160" height="72" rx="8" fill="#fff5e6" stroke="#b06a00"/>
+    <text x="410" y="468" text-anchor="middle" font-weight="600" fill="#b06a00">T100 Oracle</text>
+    <text x="410" y="486" text-anchor="middle" font-size="11" fill="#8a6a3a">退料稽核 / 标准工时</text>
+    <rect x="530" y="440" width="160" height="72" rx="8" fill="#eef4fb" stroke="#2f6fad"/>
+    <text x="610" y="468" text-anchor="middle" font-weight="600" fill="#2f6fad">蓝凌 OA SSO</text>
+    <text x="610" y="486" text-anchor="middle" font-size="11" fill="#51677d">身份 / 部门 / 工号</text>
+    <rect x="730" y="440" width="150" height="72" rx="8" fill="#eef4fb" stroke="#2f6fad"/>
+    <text x="805" y="468" text-anchor="middle" font-weight="600" fill="#2f6fad">Casdoor</text>
+    <text x="805" y="486" text-anchor="middle" font-size="11" fill="#51677d">统一认证（并存通道）</text>
+    <!-- 外部→服务 -->
+    <path d="M175 440 C 175 380 400 390 470 350 L 470 344" fill="none" stroke="#b06a00" marker-end="url(#ar)"/>
+    <text x="120" y="386" font-size="10.5" fill="#b06a00">06:30 etl_mes.py 全量重建</text>
+    <text x="120" y="401" font-size="10.5" fill="#b06a00">明细面板 subprocess 只读直查</text>
+    <path d="M410 440 C 410 400 450 380 490 348" fill="none" stroke="#b06a00" marker-end="url(#ar)"/>
+    <path d="M610 440 C 610 400 570 330 545 252" fill="none" stroke="#2f6fad" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+    <text x="560" y="392" font-size="10.5" fill="#2f6fad">登录鉴权（生产）</text>
+    <path d="M805 440 C 805 410 640 380 560 252" fill="none" stroke="#2f6fad" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+    <!-- 发布流注记 -->
+    <rect x="60" y="356" width="300" height="40" rx="8" fill="#fafcfe" stroke="#cdd8e4" stroke-dasharray="4 3"/>
+    <text x="210" y="373" text-anchor="middle" font-size="11" fill="#51677d" font-weight="600">发布流：改代码 → SMB 传测试目录 → 18123 验证</text>
+    <text x="210" y="388" text-anchor="middle" font-size="11" fill="#51677d">→ 复制文件发布 C:\mes_dashboard → 重启 8123</text>
+    <line x1="360" y1="376" x2="396" y2="220" stroke="#8fa3b8" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+  </svg>
+  </div>
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="sech" style="margin-top:0">模块与文件</div>
+  <div class="tscroll"><table class="devTbl">
+    <thead><tr><th style="width:250px">文件</th><th>职责</th></tr></thead>
+    <tbody>
+      <tr><td><code>main.py</code></td><td>FastAPI 单体：页面路由 + 全部 /api + 报告生成编排 + 自重启（2200+ 行）；环境变量门控补丁（横幅/假身份/兜底路由）</td></tr>
+      <tr><td><code>oa_auth.py</code></td><td>蓝凌 OA 单点登录：鉴权中间件、会话 Cookie、权限表（oa_users.json）、NAV_RULES 随 /sso/me 下发、挂载 /admin/users；由 oa_auth.env 开关</td></tr>
+      <tr><td><code>casdoor_auth.py</code></td><td>Casdoor 统一认证通道（2026-10-08 与 OA 并存），配置在 oa_auth.env 的 CASDOOR_*</td></tr>
+      <tr><td><code>feedback_updates.py</code></td><td>意见反馈 / 更新公告 / 口径说明 / sysinfo（数据在 feedback.db，register(app, oa) 挂路由，装载失败不影响本体）</td></tr>
+      <tr><td><code>caliber_data.py</code></td><td>口径说明种子 14 主题（仅 caliber 表为空时灌入 v1）</td></tr>
+      <tr><td><code>etl_mes.py</code></td><td>每日全量 ETL：5 个 MES 源库（三厂 + 智能注塑并入C事业部 OEE + D事业部线路板，D事业部走专属 SP）+ T100 → mes.db 长表（metric_daily / metric_meta / division_meta）</td></tr>
+      <tr><td><code style="white-space:normal;line-height:2">metric_detail.py · kitting_detail.py · fpy_returns.py · fpy_reason.py · oee_anomaly.py · maint_events.py · plan_returns.py · plan_labor.py · iqc_stats.py · fqc_stats.py · ie_efficiency.py · attendance.py · mold_stats.py · front_line.py · quality_deep.py</code></td><td>明细/深度取数脚本：subprocess 直连 MES/T100 实时库（只读），复用官方 SP / 视图口径；供明细面板与月度报告。<span style="color:#b06a00">D事业部暂未接入这些明细/专项接口（前端对应入口已隐藏，避免点击报错）</span></td></tr>
+      <tr><td><code>report_render.py</code></td><td>月度运营报告渲染（事业部 32 页 / 全厂版；36 表 64 KPI + 质量块 + 模具设备四页）</td></tr>
+      <tr><td><code>static/index.html</code></td><td>前台看板（单文件 SPA + echarts；口径问号弹层 / 意见 FAB / 公告铃铛）</td></tr>
+      <tr><td><code>static/admin.html</code></td><td>后台控制台（六页签，本页面）</td></tr>
+      <tr><td><code>static/users.html</code></td><td>账号权限页（仅鉴权启用时由 oa_auth 挂载 /admin/users）</td></tr>
+      <tr><td><code>keepalive.ps1 · etl_daily.ps1 · restart_dashboard.bat</code></td><td>生产守护（15s 查端口拉起）/ 每日 ETL 包装 / 重启脚本</td></tr>
+      <tr><td><code>test_sync_db.py · keepalive_test.ps1 · restart_test.bat</code></td><td>仅测试环境：sqlite backup 快照同步 / 18123 守护 / 重启</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="sech" style="margin-top:0">接口清单</div>
+  <div class="tscroll"><table class="devTbl">
+    <thead><tr><th style="width:330px">接口</th><th style="width:150px">鉴权</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td class="grp" colspan="3">页面</td></tr>
+      <tr><td><code>/</code> → 307 → <code>/live</code></td><td>生产需登录</td><td>前台看板；<code>/snapshot</code> 离线快照、<code>/report</code> 报告页</td></tr>
+      <tr><td><code>/admin</code></td><td>生产需登录</td><td>后台控制台（本页面）</td></tr>
+      <tr><td><code>/admin/users</code></td><td>仅管理员</td><td>账号权限页（鉴权启用时；免登录环境 302 → /admin）</td></tr>
+      <tr><td><code>/sso/login · /sso/me · /sso/logout</code></td><td>—</td><td>OA/Casdoor 登录链路与身份下发（免登录环境有兜底路由）</td></tr>
+      <tr><td class="grp" colspan="3">看板数据（读 mes.db，按登录据点/车间过滤）</td></tr>
+      <tr><td><code>/api/divisions · /api/kpi · /api/metrics · /api/series · /api/breakdown · /api/range · /api/export</code></td><td>登录+据点权</td><td>KPI 汇总 / 趋势 / 维度分解 / 区间 / 导出（pooled 加权口径）</td></tr>
+      <tr><td><code>/api/etl/status · POST /api/etl/run · POST /api/etl/rerun</code></td><td>run 需登录；rerun 仅管理员</td><td>数据同步状态 / 手动触发 ETL / 手动重跑日更补数（可指定补数天数）</td></tr>
+      <tr><td class="grp" colspan="3">明细直查（subprocess 现查 MES/T100，单次 1~5s，带 TTL 缓存）</td></tr>
+      <tr><td><code>/api/metric_detail · /api/kitting_detail · /api/fpy_returns · /api/fpy_reason · /api/oee_anomaly · /api/maint_events · /api/plan_returns · /api/fqc_stats · /api/iqc_stats · /api/ie_efficiency · /api/report_attendance · /api/staffing</code></td><td>登录+据点权</td><td>KPI 卡带出的明细面板与质量/效率专项</td></tr>
+      <tr><td><code>POST /api/staffing/save · /api/staffing/clear</code></td><td>管理员</td><td>班次班长维护</td></tr>
+      <tr><td class="grp" colspan="3">月度报告</td></tr>
+      <tr><td><code>/api/report/gen · /api/report/list · /api/report/data</code></td><td>report_admin</td><td>生成（GET/POST 双支持）/ 列表 / 数据载荷</td></tr>
+      <tr><td><code>POST /api/report/archive · archive/delete · archive/import · delete</code></td><td>report_admin</td><td>留档快照 / 删除（工作版删除，留档保留）/ 导入留档</td></tr>
+      <tr><td class="grp" colspan="3">后台管理</td></tr>
+      <tr><td><code>/api/admin/logs · logs/tail · logs/download · /api/admin/oplog</code></td><td>管理员</td><td>运行日志预览下载 / 账号操作审计</td></tr>
+      <tr><td><code>POST /api/admin/restart</code></td><td>管理员</td><td>自重启（仅本服务；MES_SELF_RESTART=0 可关；免登录环境不可用）</td></tr>
+      <tr><td><code>/api/admin/sysinfo</code></td><td>管理员</td><td>本页实时状态：目录/端口/环境开关/库表统计/计划任务（不含任何凭据值）</td></tr>
+      <tr><td class="grp" colspan="3">意见 / 公告 / 口径（feedback.db；测试环境 2026-10-10 上线）</td></tr>
+      <tr><td><code>POST /api/feedback · GET /api/updates · /api/calibers</code></td><td>公开</td><td>提交意见 / 已发布公告 / 口径简述（前台问号数据源）</td></tr>
+      <tr><td><code>/api/feedback/list · POST feedback/{id}/handle</code></td><td>管理员</td><td>意见收集与处理（done/rejected 必填说明）</td></tr>
+      <tr><td><code>/api/updates/all · POST updates · POST updates/{id}</code></td><td>管理员</td><td>公告发布/编辑/隐藏（无销毁，历史留痕）</td></tr>
+      <tr><td><code>/api/calibers/all · log/{key} · POST calibers · calibers/{key} · {key}/revert</code></td><td>管理员</td><td>口径编辑（必填变更说明）/ 版本历史 / 回退</td></tr>
+    </tbody>
+  </table></div>
+  <div class="devNote">实时接口契约以 <a class="btn" href="/openapi.json" target="_blank">/openapi.json</a> 为准；权限键（report_view / report_admin / export / detail + 8124 的 m_*）定义在 <code>oa_auth.py</code> 的 <code>PERMS</code> 与 <code>NAV_RULES</code>，改权限只改后端一处。</div>
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="sech" style="margin-top:0">部署与运维</div>
+  <div class="tscroll"><table class="devTbl">
+    <thead><tr><th style="width:120px">实例</th><th style="width:190px">目录 / 端口</th><th style="width:250px">计划任务</th><th>数据与说明</th></tr></thead>
+    <tbody>
+      <tr><td><b>生产看板</b></td><td><code>C:\mes_dashboard</code> · 8123</td><td>MES_Dashboard_KeepAlive（常驻）<br>MES_Dashboard_ETL_Daily（06:30）</td><td>mes.db 每日全量重建；门户经 187 nginx（oa.yuelicn.com:8123）；鉴权 OA+Casdoor 双通道</td></tr>
+      <tr><td><b>测试看板</b></td><td><code>C:\mes_dashboard_test</code> · 18123</td><td>MES_DashboardTest_KeepAlive<br>MES_DashboardTest_Dbsync（07:05）</td><td>免登录 + 假管理员 + 顶部横幅；mes.db 为生产一致快照（业务数据只存 feedback.db）；防火墙规则 MES_Dashboard_Test_18123</td></tr>
+      <tr><td><b>月度填报</b></td><td><code>C:\mes_monthly</code> · 8124</td><td>MES_Monthly_KeepAlive</td><td>填报/汇总/品质专项；与 8123 共用 oa_users.json；自重启机制历史不稳（10-09 事故），改后必须验证 /api/me</td></tr>
+    </tbody>
+  </table></div>
+  <div class="devNote">
+    <b>发布流（标准动作）</b>：① 改代码 → ② SMB 上传 <code>\\192.168.2.149\C$\mes_dashboard_test\</code>（本机挂载 <code>~/mnt/c149</code>；⚠ 历史遗留的 <code>/Volumes/C$</code> 指向 145，动手前先 <code>mount</code> 确认）→
+    ③ <code>atexec restart_test.bat</code> 重启 18123 → ④ 测试验证 → ⑤ 复制文件发布 <code>C:\mes_dashboard</code> → ⑥ <code>atexec restart_dashboard.bat</code> 或页面按钮重启 8123 → ⑦ <b>发更新公告</b>（后台「更新公告」页签）。<br>
+    <b>远程执行通道</b>：WinRM(5985) 对 administrator 全程 401（授权策略问题）→ 走 <b>atexec</b>（SMB 445 建一次性计划任务，SYSTEM 权限；命令必须绝对路径、勿自带重定向、链式 <code>&amp;</code> 多命令会静默失败需拆单条或收进 bat）。<br>
+    <b>回滚</b>：生产目录每次部署前落 <code>backup_YYYYMMDD_HHMMSS/</code> 与 <code>*.bak-*</code> 文件；测试目录另有 <code>_staging/</code>。<br>
+    <b>口径权威文档</b>：服务器 <code>mes_dashboard/MES运营综合看板_指标取值逻辑手册_V1.1.docx</code> + 本后台「口径说明」页签（口径变更三处同步：代码、手册、口径页签）。<br>
+    <b>环境变量</b>：<code>MES_PORT</code>（默认 8123）· <code>MES_ENV_BANNER</code>（横幅，仅测试）· <code>MES_TEST_FAKE_IDENTITY</code>（假管理员，需鉴权关闭才生效，仅测试）· <code>MES_SELF_RESTART=0</code>（关自重启）· <code>oa_auth.env</code>（OA_AUTH_ENABLED / PUBLIC_BASE / CASDOOR_*，含凭据，勿外发）。
+  </div>
+</section>
+</div><!-- /pane-dev -->
+
+<div class="tabpane" id="pane-api" hidden>
+<section class="panel embedWrap" style="margin-top:0;padding:14px">
+  <div id="apiBox"><div class="muted" style="padding:20px">加载中…</div></div>
+</section>
+</div><!-- /pane-api -->
+
+<div class="tabpane" id="pane-acct" hidden>
+<section class="panel embedWrap" style="margin-top:0;padding:14px">
+  <div id="acctBox"><div class="muted" style="padding:20px">加载中…</div></div>
+</section>
+</div><!-- /pane-acct -->
+
+<div class="tabpane" id="pane-div" hidden>
+<section class="panel embedWrap" style="margin-top:0;padding:14px">
+  <div id="divBox"><div class="muted" style="padding:20px">加载中…</div></div>
+</section>
+</div><!-- /pane-div -->
+
+<div class="tabpane" id="pane-log" hidden>
+<section class="panel embedWrap" style="margin-top:0;padding:14px">
+  <div id="logBox"><div class="muted" style="padding:20px">加载中…</div></div>
+</section>
+</div><!-- /pane-log -->
+
+<div class="tabpane" id="pane-sys" hidden>
+<section class="panel" id="rstPanel" style="border-color:#e08a1e;margin-top:0">
+  <div class="sech" style="margin-top:0">服务重启（改完配置/代码后用这里代替登服务器跑 bat）</div>
+  <div style="font-size:12.5px;color:#5b6b7c;line-height:1.8;margin-bottom:10px">
+    · 重启期间对应页面会短暂打不开，约 20 秒恢复；<b>看板与填报表单互不影响</b><br>
+    · 本机 149 / 145 的 WinRM、SCMR、ATSVC 全部被封，无法从外部远程重启，
+      所以改成「服务自己拉起替补进程再退出」，<b>不依赖保活任务</b><br>
+    · 仅管理员可用；<b>不接受任何外部命令</b>，只重启自身，不是远程执行通道<br>
+    · 只想让改动生效、但当前页面正常时，<b>不要随手点</b>——先确认自己在改什么
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <button class="rstbtn" id="rstDash" onclick="doRestart('dashboard')">重启本看板</button>
+    <button class="rstbtn" id="rstMon" onclick="doRestart('monthly')">重启填报表单 8124</button>
+    <button class="rstbtn" id="rstAll" onclick="doRestart('all')">两个都重启</button>
+    <span id="rstMsg" class="rstlog"></span>
+  </div>
+</section>
+
+<section class="panel" style="margin-top:22px">
+  <div class="sech" style="margin-top:0">外部入口</div>
+  <div class="muted" style="margin-bottom:12px">
+    月度数据填报与汇总是独立服务（8124），填报权限（m_fill / m_review）在 8124 侧的账号管理里分配。
+  </div>
+  <div class="row">
+    <a class="btn" href="http://192.168.2.149:8124/monthly" target="_blank" rel="noopener"
+       title="业务方填报整改措施与原因分析（8124）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5H6.5A1.5 1.5 0 0 0 5 6.5v13A1.5 1.5 0 0 0 6.5 21H13"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L12 14l-3.5 1L9.5 11.5z"/></svg>月度数据填报表单 →</a>
+    <a class="btn arch" href="http://192.168.2.149:8124/review" target="_blank" rel="noopener"
+       title="查看各事业部填报汇总（8124）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>月度汇总查看 →</a>
+  </div>
+</section>
+<section class="panel" style="margin-top:22px">
+  <div class="sech" style="margin-top:0">MES 源库账号（客户改了密码在这里改，不用再发版）</div>
+  <div class="muted" style="margin-bottom:12px;line-height:1.85">
+    看板连 MES 源库用的账号<b>原来写死在代码里</b> —— 客户一改密码，就得改代码、走一次发布。
+    2026-11-16 起可以在下面直接改：<b>保存后立即生效，不用重启看板</b>（看板跑连库分析是起子进程，每次新起都会重读配置），
+    每天 06:30 的日更下次跑批也用新的。<br>
+    密码<b>加密存放</b>（密钥在服务器上的 mes_db.key），页面<b>只显示掩码、不回显明文</b>；每次改动都会记进「日志与审计」。<br>
+    ⚠ 没配置的源库会用<b>代码里的内置账号</b>兜底，所以不配置也能照常跑 —— 这里的配置只是"覆盖"。
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+    <button class="btn" id="mcTestAll">全部测试连接</button>
+    <button class="btn arch" id="mcReload">刷新</button>
+    <span id="mcMsg" class="fb-cnt" style="min-height:16px"></span>
+  </div>
+  <div id="mesCredBox"><div class="muted" style="padding:20px">加载中…</div></div>
+</section>
+
+<section class="panel" style="margin-top:22px">
+  <div class="sech" style="margin-top:0">日更同步状态</div>
+  <div id="etlBox"><div class="muted" style="padding:16px">加载中…</div></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
+    <button class="btn" id="etlRerun">立即重跑日更补数</button>
+    <button class="btn arch" id="etlRefresh">刷新状态</button>
+    <span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#5a6472">
+      补数天数
+      <input id="etlDays" type="number" min="1" max="90" value="14" style="width:66px">
+      天
+    </span>
+    <span id="etlMsg" class="fb-cnt" style="min-height:16px"></span>
+  </div>
+  <div class="muted" style="margin-top:8px;font-size:12px;line-height:1.7">
+    <b>什么时候用这个按钮：</b>客户改了 MES 密码 → 那几天看板数据停更 →
+    先在上面的「MES 源库账号」里把密码改好（改完立即生效，不用重启）→
+    再点「立即重跑日更补数」，把停更那几天的数据补回来。<br>
+    补数只重算所选天数窗口内的日期，<b>更早的历史仍然冻结不动</b>；默认 14 天。
+    日更每天 06:30 自动跑一次（服务器计划任务），失败时看板不会静默。
+  </div>
+</section>
+</div><!-- /pane-sys -->
+</div>
+
+<!-- 口径编辑 / 版本历史弹窗（2026-10-10） -->
+<div class="cfmMask" id="calMask" style="z-index:9550">
+  <div class="cfmCard calCard">
+    <h4 id="calTitle">编辑口径</h4>
+    <div class="row" style="margin:8px 0 0;gap:12px;align-items:flex-end">
+      <div style="width:170px"><label>标识（英文，保存后不可改）</label>
+        <input id="calKey" maxlength="32" style="width:100%" placeholder="如 kitting"></div>
+      <div style="flex:1;min-width:180px"><label>名称</label>
+        <input id="calLabel" maxlength="60" style="width:100%" placeholder="如 工单齐套率"></div>
+    </div>
+    <label style="margin-top:10px">前台简述（1~2 句，展示在前台「?」弹层）</label>
+    <textarea id="calBrief" rows="3" maxlength="500"></textarea>
+    <label style="margin-top:10px">完整口径逻辑（后台留档版）</label>
+    <textarea id="calDetail" rows="10" maxlength="8000" style="font-size:12.5px"></textarea>
+    <label style="margin-top:10px">变更说明（必填，记入版本历史）</label>
+    <input id="calNote" maxlength="500" style="width:100%" placeholder="例：齐套判据由 ≥95 调整为 ≥100，与官方视图对齐">
+    <div id="calMsg" class="fb-cnt" style="min-height:16px;margin-top:8px"></div>
+    <div class="cfmFt"><button class="ghost" id="calCancel">取消</button>
+      <button id="calSave">保存新版本</button></div>
+  </div>
+</div>
+<div class="cfmMask" id="calhMask" style="z-index:9550">
+  <div class="cfmCard calCard">
+    <h4 id="calhTitle">版本历史</h4>
+    <div id="calhBody" style="max-height:62vh;overflow:auto;margin-top:6px"></div>
+    <div class="cfmFt"><button class="ghost" id="calhClose">关闭</button></div>
+  </div>
+</div>
+<!-- MES 源库账号编辑弹窗（2026-11-16） -->
+<div class="cfmMask" id="mcMask" style="z-index:9550">
+  <div class="cfmCard">
+    <h4 id="mcTitle">修改 MES 源库账号</h4>
+    <div class="muted" style="font-size:12px;margin-bottom:8px">
+      客户 IT 改了密码就填这里 → <b>测试连接</b> → <b>保存</b>。保存后立即生效，不用重启看板。
+    </div>
+    <div class="row" style="margin:8px 0 0;gap:12px;align-items:flex-end">
+      <div style="width:190px"><label>服务器</label>
+        <input id="mcServer" style="width:100%" placeholder="192.168.2.55:1433"></div>
+      <div style="flex:1;min-width:170px"><label>库名</label>
+        <input id="mcDb" style="width:100%" placeholder="YL_MES_1_PROD"></div>
+    </div>
+    <div class="row" style="margin:10px 0 0;gap:12px;align-items:flex-end">
+      <div style="width:190px"><label>账号</label>
+        <input id="mcUser" style="width:100%" placeholder="u_cyl"></div>
+      <div style="flex:1;min-width:170px"><label>密码</label>
+        <input id="mcPass" type="password" style="width:100%" placeholder="新密码"></div>
+    </div>
+    <label style="margin-top:10px">改动说明（必填，记入审计日志）</label>
+    <input id="mcNote" maxlength="200" style="width:100%" placeholder="例：客户 IT 改了 u_cyl 密码">
+    <div id="mcMsg2" class="fb-cnt" style="min-height:16px;margin-top:8px"></div>
+    <div class="cfmFt">
+      <button class="ghost" id="mcCancel">取消</button>
+      <button class="ghost" id="mcTest">测试连接</button>
+      <button id="mcSave">保存</button>
+    </div>
+  </div>
+</div>
+<script>
+
+// ================= 统计月份默认「上一个自然月」（2026-10-07 elen 要求）=================
+// ⚠️ 原来这两个 input 的月份是**硬编码在 HTML 里**的：生成报告写死 value="2026-08"、
+//    导入留档写死 value="2026-09"。所以 8 月之后打开「生成报告」默认落在上上个月，
+//    11 月起两个都会过期。改为每次打开页面按当前日期算，永久默认上个月。
+(function () {
+  var d = new Date(), y = d.getFullYear(), m = d.getMonth();
+  if (m === 0) { m = 12; y -= 1; }                 // 1 月时「上个月」是去年 12 月
+  var v = y + '-' + String(m).padStart(2, '0');
+  ['month', 'impMonth'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el && !el.value) el.value = v;             // 只填默认值，不覆盖用户已选的月份
+  });
+})();
+
+// ================= 服务自重启（2026-10-06；2026-10-10 修跨环境隐患）=================
+// ⚠ dashboard 必须走同源相对路径：浏览器 Cookie 不区分端口，测试环境（18123）页面里
+//   若写死生产 8123 的地址，带着管理员会话点一下就会把生产 8123 重启掉。
+var RST_API = {dashboard: '/api/admin/restart',
+               monthly:   'http://192.168.2.149:8124/api/admin/restart'};
+var RST_BTN = {dashboard: 'rstDash', monthly: 'rstMon', all: 'rstAll'};
+
+async function doRestart(which){
+  var nm = function(k){ return k==='dashboard' ? ('本看板（:'+(location.port||80)+'）') : '填报表单 8124'; };
+  if (which !== 'all'){
+    const ok=await confirmBox('重启期间该页面会短暂打不开，约 20 秒恢复。',
+      {title:'确定要重启「'+nm(which==='dashboard'?'dashboard':'monthly')+'」吗？', okText:'立即重启'});
+    if(!ok) return;
+  } else {
+    const ok=await confirmBox('两个服务会先后短暂中断，各约 20 秒。',
+      {title:'确定两个服务都重启吗？', okText:'立即重启'});
+    if(!ok) return;
+  }
+
+  var ids = which === 'all' ? ['dashboard','monthly'] : [which];
+  var msg = document.getElementById('rstMsg');
+  ids.forEach(function(k){ var b=document.getElementById(RST_BTN[k]); if(b){b.classList.add('busy'); b.disabled=true;} });
+  msg.innerHTML = '正在请求重启…';
+
+  var lines = [];
+  for (var i=0;i<ids.length;i++){
+    var k = ids[i];
+    try{
+      var r = await fetch(RST_API[k], {method:'POST', credentials:'include'});
+      var d = await r.json().catch(function(){ return {}; });
+      if (r.ok) lines.push('<span class="ok">✓ ' + nm(k) + '：' + (d.message||'已安排重启') + '</span>');
+      else lines.push('<span class="err">✕ ' + nm(k) + '：' + (d.detail||('HTTP '+r.status)) + '</span>');
+    }catch(e){
+      lines.push('<span class="err">✕ ' + nm(k) + '：' + e.message + '</span>');
+    }
+  }
+  msg.innerHTML = lines.join('<br>');
+  ids.forEach(function(k){ var b=document.getElementById(RST_BTN[k]); if(b){b.classList.remove('busy'); b.disabled=false;} });
+  if (lines.join('').indexOf('✕') < 0){
+    setTimeout(function(){ msg.innerHTML += '<br><span style="color:#8a98a6">约 20 秒后刷新页面确认恢复。</span>'; }, 1200);
+  }
+}
+
+function fmtSize(n){
+  n = Number(n||0);
+  if(n >= 1048576) return (n/1048576).toFixed(2)+' MB';
+  if(n >= 1024) return (n/1024).toFixed(1)+' KB';
+  return n+' B';
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+// ================= UI 基建：toast / 确认弹窗 / 功能页签（2026-10-10）=================
+function aToast(msg, kind){
+  let t=document.getElementById('aToast');
+  if(!t){ t=document.createElement('div'); t.id='aToast'; t.className='aToast';
+    document.body.appendChild(t); }
+  t.textContent=msg; t.className='aToast'+(kind?' '+kind:'');
+  // 先复位再触发，连续调用也能重放动画
+  void t.offsetWidth; t.classList.add('on');
+  clearTimeout(t._h); t._h=setTimeout(function(){ t.classList.remove('on'); },2600);
+}
+function confirmBox(msg, opt){
+  opt=opt||{};
+  return new Promise(function(res){
+    let m=document.getElementById('cfmMask');
+    if(!m){
+      m=document.createElement('div'); m.id='cfmMask'; m.className='cfmMask';
+      m.innerHTML='<div class="cfmCard"><h4 id="cfmT"></h4><div class="cfmMsg" id="cfmM"></div>'
+        +'<div class="cfmFt"><button class="ghost" id="cfmN">取消</button>'
+        +'<button class="danger" id="cfmY">确认</button></div></div>';
+      document.body.appendChild(m);
+      const finish=function(v){ m.classList.remove('open');
+        if(m._res){ const r=m._res; m._res=null; r(v); } };
+      m.addEventListener('click',function(e){
+        if(e.target===m||e.target.id==='cfmN') finish(false);
+        else if(e.target.id==='cfmY') finish(true);
+      });
+      document.addEventListener('keydown',function(e){
+        if(e.key==='Escape'&&m.classList.contains('open')) finish(false);
+      });
+    }
+    m._res=res;   // 每次调用换 resolver，模态串行不会串话
+    document.getElementById('cfmT').textContent=opt.title||'请确认';
+    document.getElementById('cfmM').textContent=msg||'';
+    const y=document.getElementById('cfmY');
+    y.textContent=opt.okText||'确认';
+    y.className=(opt.danger===false)?'':'danger';
+    m.classList.add('open'); y.focus();
+  });
+}
+(function(){
+  const PANES={reports:'pane-reports',fb:'pane-fb',upd:'pane-upd',cal:'pane-cal',dev:'pane-dev',api:'pane-api',acct:'pane-acct',div:'pane-div',log:'pane-log',sys:'pane-sys'};
+  function showTab(k){
+    if(!PANES[k]) k='reports';
+    for(const j in PANES){ const el=document.getElementById(PANES[j]); if(el) el.hidden=(j!==k); }
+    const bs=document.querySelectorAll('#admTabs .atab');
+    for(let i=0;i<bs.length;i++) bs[i].classList.toggle('sel', bs[i].dataset.tab===k);
+  }
+  document.getElementById('admTabs').addEventListener('click',function(e){
+    const b=e.target.closest('.atab'); if(!b) return;
+    if(('#'+b.dataset.tab)===location.hash) showTab(b.dataset.tab);
+    else location.hash='#'+b.dataset.tab;
+  });
+  window.addEventListener('hashchange',function(){
+    showTab((location.hash||'').replace(/^#/,''));
+  });
+  showTab((location.hash||'').replace(/^#/,'')||'reports');
+})();
+
+function loadList(){
+  fetch('/api/report/list').then(r=>r.json()).then(d=>{
+    const reps = (d && d.reports) || [];
+    const arcs = (d && d.archives) || [];
+    const tb=document.querySelector('#list tbody');
+    if(!reps.length){ tb.innerHTML='<tr><td colspan="5" class="muted">暂无生成记录</td></tr>'; }
+    else {
+      tb.innerHTML=reps.map(x=>{
+        const prev='/generated/'+x.file.split('/').map(encodeURIComponent).join('/');
+        const reg='/api/report/gen?month='+encodeURIComponent(x.month)+'&div='+encodeURIComponent(x.div);
+        const ac = x.archive_count||0;
+        const aTag = ac ? '<span class="tag">已留档 '+ac+' 份</span>' : '<span class="muted">未留档</span>';
+        const aTitle = ac ? ('最近留档：'+esc(x.archive_latest||'')) : '';
+        return '<tr><td>'+esc(x.month)+'</td><td>'+esc(x.div_label)+'</td><td>'+esc(x.created)+'</td>'+
+               '<td title="'+aTitle+'">'+aTag+'</td>'+
+               '<td><a class="btn" href="'+prev+'" target="_blank">预览</a>'+
+               '<a class="btn arch" href="'+prev+'" download="MES月度运营报告_'+esc(x.month)+'_'+esc(x.div_label)+'.html">下载</a>'+
+               '<a class="btn" href="'+reg+'" target="_blank">重新生成</a>'+
+               '<button class="mini arch" data-act="archive" data-month="'+esc(x.month)+'" data-div="'+esc(x.div)+'">📌 留档</button>'+
+               '<button class="mini warn" data-act="delete" data-month="'+esc(x.month)+'" data-div="'+esc(x.div)+'" data-label="'+esc(x.month+' '+x.div_label)+'">🗑 删除</button>'+
+               '</td></tr>';
+      }).join('');
+    }
+    // 留档副本
+    const ab=document.querySelector('#archList tbody');
+    document.getElementById('archCnt').textContent = arcs.length+' 份';
+    if(!arcs.length){ ab.innerHTML='<tr><td colspan="5" class="muted">暂无留档</td></tr>'; }
+    else {
+      ab.innerHTML=arcs.map(a=>{
+        const u='/generated/'+a.file.split('/').map(encodeURIComponent).join('/');
+        return '<tr><td>'+esc(a.month)+'</td><td>'+esc(a.div_label)+'</td><td>'+esc(a.created)+
+               '<div class="muted">'+esc(a.archived_by||'')+'</div></td><td>'+fmtSize(a.size)+'</td>'+
+               '<td><a class="btn" href="'+u+'" target="_blank">预览</a>'+
+               '<a class="btn arch" href="'+u+'" download>下载</a>'+
+               '<button class="mini warn" data-act="archdel" data-file="'+esc(a.file)+'">删除副本</button></td></tr>';
+      }).join('');
+    }
+  }).catch(e=>{ document.querySelector('#list tbody').innerHTML='<tr><td colspan="5" class="err">列表加载失败：'+e+'</td></tr>'; });
+}
+
+// 全部按钮走事件委托（列表是动态重绘的）
+document.addEventListener('click', async function(ev){
+  const b = ev.target.closest('button[data-act]');
+  if(!b) return;
+  const act = b.dataset.act;
+  const msg = document.getElementById('msg');
+  const post = (url, body) => fetch(url, {method:'POST', headers:{'Content-Type':'application/json'},
+                                          body: JSON.stringify(body)}).then(r=>r.json());
+  if(act === 'archive'){
+    b.disabled = true; const t0 = b.textContent; b.textContent = '留档中…';
+    post('/api/report/archive', {month:b.dataset.month, div:b.dataset.div}).then(j=>{
+      if(j.ok){ msg.className='ok'; msg.textContent='✔ 已留档：'+j.archive.file+'（该报告共 '+j.keep+' 份留档）';
+        aToast('✔ 已留档（'+j.keep+' 份）','ok'); }
+      else { msg.className='err'; msg.textContent='留档失败：'+(j.error||JSON.stringify(j));
+        aToast('留档失败','bad'); }
+      if(j.ok) loadList();
+    }).catch(e=>{ msg.className='err'; msg.textContent='留档请求失败：'+e; })
+      .finally(()=>{ b.disabled=false; b.textContent=t0; });
+  } else if(act === 'delete'){
+    const label = b.dataset.label || (b.dataset.month+' '+b.dataset.div);
+    const ok = await confirmBox('将删除 generated/ 下的工作版 HTML，删除后需重新生成；\n已留档的副本会保留。',
+      {title:'确认删除「'+label+'」的生成记录？', okText:'删除', danger:true});
+    if(!ok) return;
+    b.disabled = true; b.textContent = '删除中…';
+    post('/api/report/delete', {month:b.dataset.month, div:b.dataset.div}).then(j=>{
+      if(j.ok){
+        msg.className='ok';
+        msg.textContent='✔ 已删除 '+j.month+' '+j.div+(j.archives_kept?('；保留留档副本 '+j.archives_kept+' 份'):'；无留档副本');
+        aToast('✔ 已删除生成记录','ok');
+      } else { msg.className='err'; msg.textContent='删除失败：'+(j.error||JSON.stringify(j));
+        aToast('删除失败','bad'); }
+      loadList();
+    }).catch(e=>{ msg.className='err'; msg.textContent='删除请求失败：'+e; });
+  } else if(act === 'archdel'){
+    const f = b.dataset.file;
+    const ok = await confirmBox(f+'\n\n只删副本，不影响工作版；删掉后无法恢复。',
+      {title:'确认删除这份留档副本？', okText:'删除', danger:true});
+    if(!ok) return;
+    b.disabled = true; b.textContent = '删除中…';
+    post('/api/report/archive/delete', {file:f}).then(j=>{
+      if(j.ok){ msg.className='ok'; msg.textContent='✔ 已删除留档副本：'+j.file;
+        aToast('✔ 已删除留档副本','ok'); }
+      else { msg.className='err'; msg.textContent='删除留档失败：'+(j.error||JSON.stringify(j));
+        aToast('删除留档失败','bad'); }
+      loadList();
+    }).catch(e=>{ msg.className='err'; msg.textContent='删除留档请求失败：'+e; });
+  }
+});
+
+document.getElementById('impBtn').onclick=function(){
+  const msg=document.getElementById('msg');
+  const f=document.getElementById('impFile').files[0];
+  if(!f){ msg.className='err'; msg.textContent='⚠ 请先选择要导入的 .html / .htm 报告文件'; return; }
+  if(!/\.(html?|pdf)$/i.test(f.name)){ msg.className='err'; msg.textContent='⚠ 仅支持 .html / .htm / .pdf 文件'; return; }
+  const btn=this; btn.disabled=true; btn.textContent='导入中…';
+  const reader=new FileReader();
+  reader.onload=function(){
+    const b64=(reader.result||'').split(',')[1]||'';
+    fetch('/api/report/archive/import', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({month:document.getElementById('impMonth').value,
+                            div:document.getElementById('impDiv').value,
+                            filename:f.name, content:b64})})
+    .then(r=>r.json()).then(j=>{
+      if(j.ok){
+        msg.className='ok';
+        msg.textContent='✔ 已导入留档：'+j.archive.file+'（该归档共 '+j.keep+' 份）';
+        loadList();
+        document.getElementById('impFile').value='';
+      } else { msg.className='err'; msg.textContent='导入失败：'+(j.error||JSON.stringify(j)); }
+    }).catch(e=>{ msg.className='err'; msg.textContent='导入请求失败：'+e; })
+    .finally(()=>{ btn.disabled=false; btn.textContent='⬆ 导入留档'; });
+  };
+  reader.onerror=function(){ btn.disabled=false; btn.textContent='⬆ 导入留档'; msg.className='err'; msg.textContent='读取文件失败'; };
+  reader.readAsDataURL(f);
+};
+
+document.getElementById('gen').onclick=function(){
+  const month=document.getElementById('month').value;
+  const div=document.getElementById('div').value;
+  const btn=this; btn.disabled=true; btn.textContent='生成中…';
+  const msg=document.getElementById('msg'); msg.className=''; msg.textContent='正在组装数据并生成报告…';
+  fetch('/api/report/gen?month='+encodeURIComponent(month)+'&div='+encodeURIComponent(div))
+    .then(r=>r.json()).then(j=>{
+      if(j.ok){ msg.className='ok'; msg.textContent='✔ 已生成：'+j.title; loadList();
+        window.open('/generated/'+encodeURIComponent(j.file),'_blank'); }
+      else { msg.className='err'; msg.textContent='生成失败：'+JSON.stringify(j); }
+    })
+    .catch(e=>{ msg.className='err'; msg.textContent='请求失败：'+e; })
+    .finally(()=>{ btn.disabled=false; btn.textContent='一键生成报告'; });
+};
+
+// ---- 数据同步状态 + 立即同步 ----
+function loadStatus(){
+  fetch('/api/etl/status').then(r=>r.json()).then(s=>{
+    document.getElementById('de').textContent = s.data_end || '(空)';
+    document.getElementById('ls').textContent = s.last_sync || '(无记录)';
+    const st = document.getElementById('st');
+    st.textContent = s.running ? '同步中…' : '空闲';
+    st.style.color = s.running ? '#c62828' : '#2e7d32';
+  }).catch(()=>{});
+}
+document.getElementById('sync').onclick = function(){
+  const b = this; b.disabled = true; b.textContent = '触发中…';
+  const sm = document.getElementById('synmsg'); sm.textContent = '正在触发后台同步…';
+  fetch('/api/etl/run', {method:'POST'}).then(r=>r.json()).then(j=>{
+    sm.textContent = j.msg;
+    if(j.ok){ setTimeout(loadStatus, 4000); }
+  }).catch(e=>{ sm.textContent = '请求失败：' + e; })
+  .finally(()=>{ b.disabled = false; b.textContent = '立即同步'; });
+};
+
+// ================= 意见反馈管理（2026-10-10）=================
+var FB_ST='open', fbEditId=0, fbEditAct='', fbSeq=0;   // fbSeq：并发刷新时丢弃过期响应
+var FB_LBL={open:'<span class="st st-open">待处理</span>',
+            done:'<span class="st st-done">已处理</span>',
+            rejected:'<span class="st st-rej">暂不处理</span>'};
+
+function fbPost(id, st, reply){
+  return fetch('/api/feedback/'+id+'/handle', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({status:st, reply:reply||''})}).then(r=>r.json());
+}
+function fbLoad(){
+  const seq=++fbSeq;
+  fetch('/api/feedback/list?status='+FB_ST).then(r=>r.json()).then(d=>{
+    if(seq!==fbSeq) return;   // 已有更新的请求发出，丢弃这份旧响应
+    const rows=d.rows||[];
+    document.getElementById('fbOpenTag').textContent='待处理 '+(d.open||0);
+    // 页签红点：任何页签下都能看到待处理数
+    const dot=document.getElementById('tabFbDot');
+    if(dot){ dot.textContent=(d.open>99?'99+':(d.open||0));
+      dot.classList.toggle('on',(d.open||0)>0); }
+    document.getElementById('fbCnt').textContent='当前筛选 '+rows.length+' 条';
+    const tb=document.querySelector('#fbList tbody');
+    if(!rows.length){
+      tb.innerHTML='<tr><td colspan="6" class="muted">'+
+        (FB_ST==='open'?'暂无待处理反馈 ✓':FB_ST==='done'?'暂无已处理记录':
+         FB_ST==='rejected'?'暂无「暂不处理」记录':'暂无反馈')+'</td></tr>';
+      return;
+    }
+    tb.innerHTML=rows.map(function(x){
+      let act;
+      if(fbEditId===x.id){
+        const ph=x.id&&(fbEditAct==='done')?'处理结果说明（例：已在 X 卡片补充口径标注）'
+                                            :'不处理的原因（例：口径需与 MES 官方一致，不改）';
+        act='<div class="fb-inline"><input id="fbReply" maxlength="1000" placeholder="'+ph+'">'
+          +'<button class="mini" data-act="fbsave" data-id="'+x.id+'" data-st="'+fbEditAct+'">保存</button>'
+          +'<button class="mini" data-act="fbcancel">取消</button></div>';
+      }else if(x.status==='open'){
+        act='<button class="mini" style="color:#1b7a3d;background:#f0f9f1;border-color:#bfe0c4" '
+          +'data-act="fbok" data-id="'+x.id+'">✔ 处理完成</button>'
+          +'<button class="mini warn" data-act="fbno" data-id="'+x.id+'">✕ 暂不处理</button>';
+      }else{
+        act='<button class="mini" data-act="fbdit" data-id="'+x.id+'">↺ 重新打开</button>';
+      }
+      let cell='<div class="fb-body">'+esc(x.content)+'</div>';
+      // 附件（2026-10-10）：下载走 /api/feedback/file/{stored}（uuid 令牌名，服务端找回原始文件名）
+      if(x.files && x.files.length)
+        cell+='<div style="margin-top:5px">'+x.files.map(function(f){
+          return '<a class="btn" style="margin:0 6px 0 0" target="_blank" rel="noopener" '
+            +'href="/api/feedback/file/'+esc(f.stored)+'">📎 '+esc(f.fname)
+            +(f.size?('（'+fmtSize(f.size)+'）'):'')+'</a>';
+        }).join('')+'</div>';
+      if(x.status!=='open'&&x.reply)
+        cell+='<div class="muted" style="margin-top:5px">↳ 处理：'+esc(x.reply)
+             +(x.done_ts?'（'+esc(x.done_ts)+'）':'')+'</div>';
+      return '<tr><td class="muted">'+esc(x.ts)+'</td><td>'+esc(x.kind)+'</td>'
+        +'<td>'+esc(x.who||'匿名')+'</td><td>'+cell+'</td>'
+        +'<td>'+(FB_LBL[x.status]||esc(x.status))+'</td><td>'+act+'</td></tr>';
+    }).join('');
+    if(fbEditId){const el=document.getElementById('fbReply'); if(el)el.focus();}
+  }).catch(function(e){
+    if(seq!==fbSeq) return;
+    document.querySelector('#fbList tbody').innerHTML=
+      '<tr><td colspan="6" class="err">加载失败：'+esc(String(e))+'</td></tr>';
+  });
+}
+document.getElementById('fbTabs').addEventListener('click', function(e){
+  const b=e.target.closest('button[data-fbst]'); if(!b) return;
+  const gs=this.querySelectorAll('button[data-fbst]');
+  for(let i=0;i<gs.length;i++) gs[i].classList.remove('sel');
+  b.classList.add('sel'); FB_ST=b.dataset.fbst; fbEditId=0; fbLoad();
+});
+
+// ================= 更新公告管理（2026-10-10）=================
+let upEditing=0, updCache=[];   // updCache：列表缓存，供「编辑」按钮回填表单
+function upResetForm(){
+  upEditing=0;
+  document.getElementById('upTitle').value='';
+  document.getElementById('upBody').value='';
+  document.getElementById('upPub').checked=true;
+  document.getElementById('upDate').value=upToday();
+  document.getElementById('upCancel').style.display='none';
+  document.getElementById('upSave').textContent='发布公告';
+  document.getElementById('upTitleLab').textContent='标题';
+}
+function upToday(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function updLoad(){
+  return fetch('/api/updates/all').then(r=>r.json()).then(d=>{
+    const rows=d.rows||[];
+    updCache=rows;
+    document.getElementById('updPubTag').textContent=
+      '已发布 '+rows.filter(function(x){return x.pub;}).length+' 条 · 共 '+rows.length+' 条';
+    const tb=document.querySelector('#updList tbody');
+    if(!rows.length){tb.innerHTML='<tr><td colspan="5" class="muted">暂无公告，用上面的表单发布第一条</td></tr>';return;}
+    tb.innerHTML=rows.map(function(x){
+      const stTag=x.pub?'<span class="st st-done">已发布</span>':'<span class="st st-rej">未发布</span>';
+      const op='<button class="mini" data-act="upedit" data-id="'+x.id+'">✎ 编辑</button>'
+        +(x.pub?'<button class="mini warn" data-act="uphide" data-id="'+x.id+'">隐藏</button>'
+               :'<button class="mini" style="color:#1b7a3d;background:#f0f9f1;border-color:#bfe0c4" data-act="upshow" data-id="'+x.id+'">发布</button>');
+      const cell='<b>'+esc(x.title)+'</b>'
+        +(x.body?'<div class="muted fb-body" style="margin-top:4px">'+esc(x.body)+'</div>':'');
+      return '<tr><td class="muted">'+esc(x.date)+'</td><td>'+esc(x.kind)+'</td><td>'+cell+'</td>'
+        +'<td>'+stTag+'</td><td>'+op+'</td></tr>';
+    }).join('');
+  }).catch(function(e){
+    document.querySelector('#updList tbody').innerHTML=
+      '<tr><td colspan="5" class="err">加载失败：'+esc(String(e))+'</td></tr>';
+  });
+}
+function upPatch(id, payload, msg){
+  const sm=document.getElementById('upMsg'); sm.textContent=msg||'保存中…';
+  fetch('/api/updates/'+id, {method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)}).then(r=>r.json()).then(function(j){
+      if(j.ok){sm.textContent='✔ 已'+(payload.pub===0?'隐藏':'更新');
+        aToast(payload.pub===0?'已隐藏该公告':'✔ 公告已发布','ok');updLoad();}
+      else {sm.textContent='失败：'+(j.detail||JSON.stringify(j)); aToast('公告操作失败','bad');}
+    }).catch(function(e){sm.textContent='请求失败：'+e;});
+}
+
+// ================= 口径说明管理（2026-10-10）=================
+var calRows=[], calEditingKey='';
+function calLoad(){
+  fetch('/api/calibers/all').then(r=>r.json()).then(d=>{
+    calRows=d.rows||[];
+    document.getElementById('calCntTag').textContent=calRows.length+' 条';
+    const tb=document.querySelector('#calList tbody');
+    if(!calRows.length){tb.innerHTML='<tr><td colspan="6" class="muted">暂无口径条目，点上方新建</td></tr>';return;}
+    tb.innerHTML=calRows.map(function(x){
+      const br=x.brief||'';
+      return '<tr><td><b>'+esc(x.label)+'</b></td><td><code>'+esc(x.key)+'</code></td>'+
+        '<td class="muted" title="'+esc(br)+'">'+esc(br.length>64?br.slice(0,64)+'…':(br||'（未填）'))+'</td>'+
+        '<td>v'+esc(x.ver)+'</td><td class="muted">'+esc(x.updated)+'</td>'+
+        '<td><button class="mini" data-act="caledit" data-key="'+esc(x.key)+'">✎ 编辑</button>'+
+        '<button class="mini" data-act="calhist" data-key="'+esc(x.key)+'">🕘 历史</button></td></tr>';
+    }).join('');
+  }).catch(function(e){
+    document.querySelector('#calList tbody').innerHTML=
+      '<tr><td colspan="6" class="err">加载失败：'+esc(String(e))+'</td></tr>';
+  });
+}
+function calForm(row,isNew){
+  calEditingKey=row?row.key:'';
+  document.getElementById('calTitle').textContent=isNew?'新增口径条目':('编辑口径 · '+(row?row.label:''));
+  const k=document.getElementById('calKey');
+  k.value=row?row.key:''; k.disabled=!isNew;
+  document.getElementById('calLabel').value=row?row.label:'';
+  document.getElementById('calBrief').value=row?row.brief:'';
+  document.getElementById('calDetail').value=row?row.detail:'';
+  document.getElementById('calNote').value='';
+  document.getElementById('calMsg').textContent='';
+  document.getElementById('calMask').classList.add('open');
+  setTimeout(function(){document.getElementById('calBrief').focus();},80);
+}
+document.getElementById('calAdd').onclick=function(){calForm(null,true);};
+document.getElementById('calCancel').onclick=function(){document.getElementById('calMask').classList.remove('open');};
+document.getElementById('calSave').onclick=function(){
+  const key=document.getElementById('calKey').value.trim(),
+        label=document.getElementById('calLabel').value.trim(),
+        brief=document.getElementById('calBrief').value.trim(),
+        detail=document.getElementById('calDetail').value.trim(),
+        note=document.getElementById('calNote').value.trim(),
+        sm=document.getElementById('calMsg');
+  if(!calEditingKey && !/^[a-z][a-z0-9_]{1,31}$/.test(key)){
+    sm.textContent='标识需为小写字母开头的 英文/数字/下划线（2~32 位）';return;}
+  if(label.length<2){sm.textContent='名称至少 2 个字';return;}
+  if(!note){sm.textContent='请填写变更说明（记入版本历史）';return;}
+  const url=calEditingKey?('/api/calibers/'+calEditingKey):'/api/calibers';
+  const body=calEditingKey?{label:label,brief:brief,detail:detail,note:note}
+                          :{key:key,label:label,brief:brief,detail:detail,note:note};
+  const btn=this; btn.disabled=true; sm.textContent='保存中…';
+  fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  .then(r=>r.json()).then(function(j){
+    if(j.ok){ document.getElementById('calMask').classList.remove('open');
+      aToast(calEditingKey?('✔ 已保存为 v'+j.ver):'✔ 已新建条目','ok'); calLoad(); }
+    else sm.textContent='失败：'+(j.detail||JSON.stringify(j));
+  }).catch(function(e){sm.textContent='请求失败：'+e;})
+  .finally(function(){btn.disabled=false;});
+};
+function calHist(key){
+  const row=calRows.filter(function(x){return x.key===key;})[0];
+  document.getElementById('calhTitle').textContent='版本历史 · '+(row?row.label:key);
+  document.getElementById('calhBody').innerHTML='<div class="muted">加载中…</div>';
+  document.getElementById('calhMask').classList.add('open');
+  fetch('/api/calibers/log/'+encodeURIComponent(key)).then(r=>r.json()).then(d=>{
+    const rows=d.rows||[];
+    document.getElementById('calhBody').innerHTML=rows.length?rows.map(function(x){
+      const cur=row && x.ver==row.ver;
+      return '<div class="chItem"><div class="chH"><b>v'+esc(x.ver)+'</b>'+
+        '<span class="muted">'+esc(x.ts)+'</span><span class="muted">'+esc(x.editor||'')+'</span>'+
+        (cur?'<span class="st st-done">当前版本</span>'
+            :'<button class="mini" style="margin-left:auto" data-act="calrevert" data-key="'+esc(key)+'" data-ver="'+esc(x.ver)+'">↺ 回退到此版本</button>')+
+        '</div><div class="chNote">'+esc(x.note||'')+'</div>'+
+        '<div class="chB">'+esc((x.brief||'').slice(0,120))+(((x.brief||'').length)>120?'…':'')+'</div></div>';
+    }).join(''):'<div class="muted">暂无记录</div>';
+  }).catch(function(e){document.getElementById('calhBody').innerHTML='<div class="err">加载失败：'+esc(String(e))+'</div>';});
+}
+document.getElementById('calhClose').onclick=function(){document.getElementById('calhMask').classList.remove('open');};
+['calMask','calhMask'].forEach(function(id){
+  const m=document.getElementById(id);
+  m.addEventListener('click',function(e){ if(e.target===m) m.classList.remove('open'); });
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    document.getElementById('calMask').classList.remove('open');
+    document.getElementById('calhMask').classList.remove('open');
+  }
+});
+
+// ================= 开发文档 · 实时状态（2026-10-10）=================
+function sysLoad(){
+  const box=document.getElementById('sysLive'); if(!box) return;
+  box.innerHTML='<span class="muted">加载中…</span>';
+  fetch('/api/admin/sysinfo').then(r=>r.json()).then(function(d){
+    if(!d||!d.ok){box.innerHTML='<span class="err">加载失败</span>';return;}
+    const a=d.app||{}, env=d.env||{};
+    let h='<div class="sysGrid">'
+      +'<div class="sysCell"><label>实例目录</label><code>'+esc(a.dir)+'</code></div>'
+      +'<div class="sysCell"><label>端口</label><code>'+esc(a.port)+'</code></div>'
+      +'<div class="sysCell"><label>Python</label>'+esc(a.python)+' · '+esc(a.platform)+'</div>'
+      +'<div class="sysCell"><label>进程启动</label>'+esc(a.boot)+'</div>'
+      +'<div class="sysCell"><label>鉴权</label>'
+      +(a.oa_enabled?'<span class="st st-done">OA 已启用</span>'
+                    :'<span class="st st-rej">未启用（免登录）</span>')
+      +(a.fake_identity?' + 假管理员':'')+'</div>'
+      +'</div>';
+    h+='<div class="sysCell" style="margin:6px 0 10px"><label>环境变量开关</label>'
+      +Object.keys(env).map(function(k){
+          return '<b>'+esc(k)+'=</b>'+esc(env[k]||'(未设置)');
+        }).join('　')+'</div>';
+    h+='<div class="tscroll"><table class="devTbl"><thead><tr><th style="width:130px">库文件</th>'
+      +'<th style="width:80px">大小</th><th style="width:150px">最后写入</th><th>表统计（行数）</th></tr></thead><tbody>';
+    (d.dbs||[]).forEach(function(x){
+      if(!x.exists){h+='<tr><td><code>'+esc(x.file)+'</code></td><td colspan="3" class="muted">不存在</td></tr>';return;}
+      const ts=x.tables||{}, keys=Object.keys(ts);
+      const ttxt=keys.slice(0,10).map(function(k){return esc(k)+'='+ts[k];}).join('　')
+               +(keys.length>10?' …':'');
+      h+='<tr><td><code>'+esc(x.file)+'</code></td><td>'+fmtSize(x.size)+'</td>'
+        +'<td class="muted">'+esc(x.mtime||'')+'</td>'
+        +'<td class="muted" style="font-size:11.5px">'+(ttxt||'—')
+        +(x.err?' <span class="err">'+esc(x.err)+'</span>':'')+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+    h+='<div style="margin-top:10px"><label class="sysLab">计划任务（149 · 任务定义存在性）</label>'
+      +Object.keys(d.tasks||{}).map(function(t){
+        return '<span class="st '+(d.tasks[t]?'st-done">✓ ':'st-rej">✗ ')+esc(t)+'</span> ';
+      }).join('')+'</div>';
+    box.innerHTML=h;
+  }).catch(function(e){box.innerHTML='<span class="err">请求失败：'+esc(String(e))+'</span>';});
+}
+document.getElementById('sysRef').onclick=sysLoad;
+
+// ============ 内嵌分区页签：环境自适应（2026-10-12 分类重理）============
+// 三个一级页签共用 users.html，用 ?embed=1&sec=X 只渲染对应分区并隐藏其自带页头/子页签：
+//   生产（OA 鉴权启用）→ /admin/users?embed=1&sec=X
+//   免登录测试环境     → /static/users.html?embed=1&sec=X
+// ⚠ 测试环境的 /admin/users 会 302→/admin，挂进 iframe 就是自我递归嵌套，绝不能用。
+// 账号类两页在测试环境没有账号体系可管，仍显示指引卡；日志与审计两边都能真看（走 /api/admin/logs）。
+var EMB_DONE={};
+var mePromise=null;
+function meInfo(){
+  if(!mePromise) mePromise=fetch('/sso/me').then(r=>r.ok?r.json():null).catch(function(){return null;});
+  return mePromise;
+}
+function frame(box, path, sec, label){
+  box.innerHTML='<iframe class="embedFrame" src="'+path+'?embed=1&sec='+sec+'" title="'+label+'"></iframe>';
+}
+function embedInit(boxId, sec, allowFake, label){
+  if(EMB_DONE[boxId]) return;
+  EMB_DONE[boxId]=true;
+  const box=document.getElementById(boxId); if(!box) return;
+  meInfo().then(function(u){
+    if(u && !u.fake){ frame(box,'/admin/users',sec,label); return; }
+    if(allowFake){ frame(box,'/static/users.html',sec,label); return; }
+    box.innerHTML='<div class="acctGuide"><b>'+label+'由登录鉴权系统提供</b><br>'
+      +'当前为免登录测试环境（18123），没有账号体系可管理；users.html 的账号接口不装载。<br>'
+      +'生产环境（8123）登录后台后，此页签会直接内嵌该分区。<br>'
+      +'<a class="btn" href="http://192.168.2.149:8123/admin#'+sec+'" target="_blank" rel="noopener" '
+      +'style="margin-top:10px;display:inline-block">打开生产后台对应页签 →</a></div>';
+  });
+}
+// 页签切换时懒加载：pane 取消 hidden 即初始化（覆盖点击与 hash 直达两条路径）
+(function(){
+  const SPEC=[['pane-acct','acctBox','acct',false,'账号与角色'],
+              ['pane-div','divBox','div',false,'据点范围'],
+              ['pane-log','logBox','log',true,'日志与审计']];
+  SPEC.forEach(function(s){
+    const pane=document.getElementById(s[0]); if(!pane) return;
+    const mo=new MutationObserver(function(){
+      if(!pane.hidden) embedInit(s[1],s[2],s[3],s[4]);
+    });
+    mo.observe(pane,{attributes:true,attributeFilter:['hidden']});
+    // ⚠ hash 直达时 showTab 在本 observer 注册前就已取消 hidden，错过变更 → 注册后立即补查一次
+    if(!pane.hidden) embedInit(s[1],s[2],s[3],s[4]);
+  });
+})();
+
+// ---- API 接口页签（2026-10-12）：自渲染，不用 iframe ----
+(function(){
+  const pane=document.getElementById('pane-api'); if(!pane) return;
+  let inited=false;
+  const mo=new MutationObserver(function(){
+    if(!pane.hidden && !inited){ inited=true; apiLoad(); }
+  });
+  mo.observe(pane,{attributes:true,attributeFilter:['hidden']});
+  if(!pane.hidden){ inited=true; apiLoad(); }
+})();
+
+function apiLoad(){
+  const box=document.getElementById('apiBox'); if(!box) return;
+  box.innerHTML='<div class="muted" style="padding:20px">加载中…</div>';
+  fetch('/api/admin/api_keys',{headers:{'Cache-Control':'no-store'}})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status+'（仅管理员可查看）'); return r.json(); })
+    .then(function(d){
+      if(!d.ok) throw new Error(d.error||'加载失败');
+      const ed=document.createElement('div');
+      // 1) 说明
+      const note=document.createElement('div');
+      note.style.cssText='background:#f0f6ff;border:1px solid #cfe0ff;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;line-height:1.7';
+      note.innerHTML='<b>只读查询接口</b>：<code style="background:#fff;padding:1px 6px;border-radius:4px">GET '+esc(d.endpoint||'/api/metric_detail')+'</code>，'
+        +'支持 <code>metric=fai|patrol|plan_labor</code>（含巡检记录级无效归因 / 工单暂停原因归因），'
+        +'<code>division=div_a|div_b|div_c|div_d</code>（<span style="color:#b06a00">div_d＝D事业部：fai/patrol 可查但当前多数为空，kitting/稽核等专项接口未接入该厂</span>），<code>start/end</code> 闭区间，<code>top</code> 条数，<code>refresh</code> 强刷缓存。<br>'
+        +'鉴权：<code>?api_key=&lt;KEY&gt;</code> 或请求头 <code>x-api-key</code>；白名单仅 '+esc((d.ro_paths||[]).join('、')||'（无）')+'。<br>'
+        +'DB 管理的 key（下表）<b>实时生效</b>；env 兜底 key 需改 <code>oa_auth.env</code> 的 MES_API_KEYS 后重启。';
+      ed.appendChild(note);
+      // 2) env 兜底 key
+      const envKeys=d.env_keys||[];
+      if(envKeys.length){
+        const h3=document.createElement('h3');
+        h3.textContent='env 兜底 key（oa_auth.env · 改后需重启生效）';
+        h3.style.cssText='margin:12px 0 6px;font-size:14px';
+        ed.appendChild(h3);
+        envKeys.forEach(function(k){
+          const row=document.createElement('div');
+          row.style.cssText='display:flex;gap:8px;align-items:center;margin:4px 0';
+          const code=document.createElement('code');
+          code.textContent=k;
+          code.style.cssText='background:#f2f4f7;padding:4px 8px;border-radius:6px;font-size:12.5px;flex:1;word-break:break-all';
+          row.appendChild(code);
+          row.appendChild(apiCopyBtn(k));
+          ed.appendChild(row);
+        });
+      }
+      // 3) DB key 表
+      const dbKeys=d.db_keys||[];
+      const h2=document.createElement('h3');
+      h2.textContent='后台管理的 key（auth_audit.db · 实时生效）';
+      h2.style.cssText='margin:14px 0 6px;font-size:14px';
+      ed.appendChild(h2);
+      if(!dbKeys.length){
+        const em=document.createElement('div');
+        em.className='muted'; em.textContent='暂无后台管理的 key，用下面表单新增。';
+        em.style.cssText='padding:8px 0';
+        ed.appendChild(em);
+      }else{
+        const tb=document.createElement('table');
+        tb.className='tbl';
+        tb.style.cssText='width:100%;border-collapse:collapse;font-size:13px';
+        const th=document.createElement('tr');
+        ['Key','备注','状态','创建时间','操作'].forEach(function(t){
+          const c=document.createElement('th');
+          c.textContent=t; c.style.cssText='text-align:left;padding:6px 8px;border-bottom:2px solid #e3e8ef;background:#f7f9fc';
+          th.appendChild(c);
+        });
+        tb.appendChild(th);
+        dbKeys.forEach(function(r){
+          const tr=document.createElement('tr');
+          const tds=[
+            (function(){const c=document.createElement('td');const code=document.createElement('code');code.textContent=r.key;code.style.cssText='font-size:12px;word-break:break-all';c.appendChild(code);c.appendChild(apiCopyBtn(r.key));c.style.cssText='padding:6px 8px;border-bottom:1px solid #edf0f5';return c;})(),
+            (function(){const c=document.createElement('td');c.textContent=r.note||'';c.style.cssText='padding:6px 8px;border-bottom:1px solid #edf0f5';return c;})(),
+            (function(){const c=document.createElement('td');c.textContent=r.enabled?'启用':'停用';c.style.cssText='padding:6px 8px;border-bottom:1px solid #edf0f5;color:'+(r.enabled?'#2e7d32':'#c62828')+';font-weight:600';return c;})(),
+            (function(){const c=document.createElement('td');c.textContent=r.created_at||'';c.style.cssText='padding:6px 8px;border-bottom:1px solid #edf0f5;color:#667';return c;})(),
+            (function(){const c=document.createElement('td');c.style.cssText='padding:6px 8px;border-bottom:1px solid #edf0f5;white-space:nowrap';
+              const tg=document.createElement('button');tg.className='btn';tg.style.cssText='font-size:12px;padding:2px 10px;margin-right:6px';
+              tg.textContent=r.enabled?'停用':'启用';tg.onclick=function(){ apiToggle(r.key); };c.appendChild(tg);
+              const dl=document.createElement('button');dl.className='btn';dl.style.cssText='font-size:12px;padding:2px 10px;color:#b00020;border-color:#f0c4c4';
+              dl.textContent='删除';dl.onclick=function(){ apiDel(r.key); };c.appendChild(dl);return c;})()
+          ];
+          tds.forEach(function(td){ tr.appendChild(td); });
+          tb.appendChild(tr);
+        });
+        ed.appendChild(tb);
+      }
+      // 4) 新增表单
+      const fh=document.createElement('h3');
+      fh.textContent='新增 key（备注留空也可，key 留空自动生成）';
+      fh.style.cssText='margin:14px 0 6px;font-size:14px';
+      ed.appendChild(fh);
+      const form=document.createElement('div');
+      form.style.cssText='display:flex;gap:8px;flex-wrap:wrap;align-items:center';
+      const inpNote=document.createElement('input');
+      inpNote.placeholder='备注（给哪个系统用）';
+      inpNote.style.cssText='flex:1;min-width:160px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;font-size:13px';
+      const inpKey=document.createElement('input');
+      inpKey.placeholder='自定义 key（留空自动生成 40 位）';
+      inpKey.style.cssText='flex:2;min-width:220px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;font-size:12.5px;font-family:monospace';
+      const addBtn=document.createElement('button');
+      addBtn.className='btn';addBtn.textContent='＋ 新增';
+      addBtn.onclick=function(){
+        addBtn.disabled=true;
+        fetch('/api/admin/api_keys',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({key:inpKey.value.trim(),note:inpNote.value.trim()})})
+          .then(function(r){return r.json();})
+          .then(function(j){
+            if(!j.ok) throw new Error(j.error||'新增失败');
+            aToast('✔ 已新增 key','ok'); apiLoad();
+          })
+          .catch(function(e){ aToast('✖ '+e.message,'err'); addBtn.disabled=false; apiLoad(); });
+      };
+      form.appendChild(inpNote);form.appendChild(inpKey);form.appendChild(addBtn);
+      ed.appendChild(form);
+      // 5) curl 示例
+      const ch=document.createElement('h3');
+      ch.textContent='调用示例（把 {KEY} 换成上面的 key）';
+      ch.style.cssText='margin:14px 0 6px;font-size:14px';
+      ed.appendChild(ch);
+      const allKeys=(envKeys||[]).concat((dbKeys||[]).filter(function(k){return k.enabled;}).map(function(k){return k.key;}));
+      const sample='curl "http://192.168.2.149:8123'+esc(d.endpoint||'/api/metric_detail')
+        +'?metric=patrol&division=div_a&start=2026-09-01&end=2026-09-30&top=100&api_key='+(allKeys[0]||'{KEY}')+'"';
+      const pre=document.createElement('pre');
+      pre.textContent=sample;
+      pre.style.cssText='background:#0f1720;color:#c9e6ff;padding:10px 12px;border-radius:8px;font-size:12.5px;overflow-x:auto;white-space:pre-wrap;word-break:break-all';
+      ed.appendChild(pre);
+      const copyC=document.createElement('button');
+      copyC.className='btn';copyC.textContent='复制示例';
+      copyC.style.cssText='margin-top:6px;font-size:12.5px';
+      copyC.onclick=function(){ navigator.clipboard.writeText(sample).then(function(){aToast('已复制','ok');}); };
+      ed.appendChild(copyC);
+      box.innerHTML='';box.appendChild(ed);
+    })
+    .catch(function(e){ box.innerHTML='<div class="err" style="color:#b00020;padding:10px">'+esc(String(e&&e.message||e))+'</div>'; });
+}
+function apiCopyBtn(key){
+  const b=document.createElement('button');
+  b.className='btn';b.textContent='复制';
+  b.style.cssText='font-size:12px;padding:2px 10px';
+  b.onclick=function(){ navigator.clipboard.writeText(key).then(function(){aToast('已复制 key','ok');}); };
+  return b;
+}
+function apiToggle(key){
+  fetch('/api/admin/api_keys/toggle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:key})})
+    .then(function(r){return r.json();})
+    .then(function(j){ aToast(j.ok?('已'+(j.enabled?'启用':'停用')):(j.error||'操作失败'),j.ok?'ok':'err'); apiLoad(); })
+    .catch(function(e){ aToast('✖ '+e.message,'err'); apiLoad(); });
+}
+function apiDel(key){
+  confirmBox('删除后该 key 立即失效，且无法恢复。确认删除？',{okText:'删除'}).then(function(yes){
+    if(!yes) return;
+    fetch('/api/admin/api_keys/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:key})})
+      .then(function(r){return r.json();})
+      .then(function(j){ aToast(j.ok?'✔ 已删除':('✖ '+(j.error||'删除失败')),j.ok?'ok':'err'); apiLoad(); })
+      .catch(function(e){ aToast('✖ '+e.message,'err'); apiLoad(); });
+  });
+}
+
+// ---- 两节共用的按钮事件（列表是动态重绘的，走委托）----
+document.addEventListener('click', function(ev){
+  const b=ev.target.closest('button[data-act]'); if(!b) return;
+  const act=b.dataset.act;
+  if(act==='fbok'||act==='fbno'){
+    fbEditId=+b.dataset.id; fbEditAct=(act==='fbok'?'done':'rejected'); fbLoad(); return;
+  }
+  if(act==='fbcancel'){ fbEditId=0; fbLoad(); return; }
+  if(act==='fbdit'){ b.disabled=true;
+    fbPost(+b.dataset.id,'open','').then(function(){ aToast('↺ 已重新打开','ok'); fbLoad(); })
+      .catch(function(){ b.disabled=false; fbLoad(); }); return; }
+  if(act==='fbsave'){
+    const el=document.getElementById('fbReply');
+    const v=(el&&el.value||'').trim();
+    if(!v){ if(el){el.style.borderColor='#c62828';el.placeholder='必须写一句说明';el.focus();} return; }
+    const id=+b.dataset.id, st=b.dataset.st;
+    b.disabled=true; fbEditId=0;
+    fbPost(id, st, v).then(function(j){
+      if(j&&j.ok===false){ aToast('处理失败：'+(j.error||''),'bad'); }
+      else aToast(st==='done'?'✔ 已标记处理完成':'已暂不处理','ok');
+      fbLoad();
+    }).catch(function(){ aToast('处理请求失败','bad'); fbLoad(); });
+    return;
+  }
+  if(act==='upedit'){
+    const x=updCache.filter(function(r){return r.id===+b.dataset.id;})[0];
+    if(!x) return;
+    upEditing=x.id;
+    document.getElementById('upKind').value=x.kind;
+    document.getElementById('upDate').value=x.date;
+    document.getElementById('upTitle').value=x.title;
+    document.getElementById('upBody').value=x.body||'';
+    document.getElementById('upPub').checked=!!x.pub;
+    document.getElementById('upCancel').style.display='';
+    document.getElementById('upSave').textContent='保存修改';
+    document.getElementById('upTitleLab').textContent='标题（正在编辑 #'+x.id+'）';
+    document.getElementById('updSec').scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
+  if(act==='uphide'||act==='upshow'){ upPatch(+b.dataset.id,{pub:act==='upshow'?1:0}); return; }
+  if(act==='caledit'){
+    const r=calRows.filter(function(x){return x.key===b.dataset.key;})[0];
+    if(r) calForm(r,false); return;
+  }
+  if(act==='calhist'){ calHist(b.dataset.key); return; }
+  if(act==='calrevert'){
+    b.disabled=true;
+    fetch('/api/calibers/'+b.dataset.key+'/revert',{method:'POST',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({ver:+b.dataset.ver})})
+    .then(r=>r.json()).then(function(j){
+      if(j.ok){ aToast('↺ 已按 v'+b.dataset.ver+' 回退（生成新版本 v'+j.ver+'）','ok');
+        calLoad(); calHist(b.dataset.key); }
+      else { aToast('回退失败：'+(j.detail||''),'bad'); b.disabled=false; }
+    }).catch(function(e){ aToast('回退请求失败','bad'); b.disabled=false; });
+    return;
+  }
+});
+document.getElementById('upSave').onclick=function(){
+  const kind=document.getElementById('upKind').value,
+        date=document.getElementById('upDate').value,
+        title=document.getElementById('upTitle').value.trim(),
+        body=document.getElementById('upBody').value.trim(),
+        pub=document.getElementById('upPub').checked,
+        sm=document.getElementById('upMsg');
+  if(title.length<2){sm.textContent='标题至少 2 个字';return;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){sm.textContent='日期格式应为 YYYY-MM-DD';return;}
+  const btn=this; btn.disabled=true; sm.textContent='提交中…';
+  const url=upEditing?('/api/updates/'+upEditing):'/api/updates';
+  fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({kind:kind,date:date,title:title,body:body,pub:pub})})
+  .then(r=>r.json()).then(function(j){
+    if(j.ok){sm.textContent=upEditing?'✔ 已保存修改':'✔ 已'
+      +(pub?'发布':'存为草稿');upResetForm();updLoad();}
+    else sm.textContent='失败：'+(j.detail||JSON.stringify(j));
+  }).catch(function(e){sm.textContent='请求失败：'+e;})
+  .finally(function(){btn.disabled=false;});
+};
+document.getElementById('upCancel').onclick=function(){upResetForm();};
+
+loadList();
+loadStatus();
+setInterval(loadStatus, 15000);
+document.getElementById('upDate').value=upToday();
+fbLoad();
+updLoad();
+calLoad();
+sysLoad();
+
+// ================= MES 源库账号 + 日更状态（2026-11-16）=================
+// 起因：客户 SQL Server 的 u_cyl 密码到期（18487），三厂连不上、日更静默失败一整天。
+// 这里让管理员能自己改账号密码（改完立即生效）、并一眼看出哪个源库连不上。
+var MC = {src:'', label:''};
+
+function mcMsg(txt, kind){
+  const el=document.getElementById('mcMsg');
+  if(el){ el.textContent=txt||''; el.style.color = kind==='err' ? '#d64545' : (kind==='ok' ? '#2e9e5b' : ''); }
+}
+function mcMsg2(txt, kind){
+  const el=document.getElementById('mcMsg2');
+  if(el){ el.textContent=txt||''; el.style.color = kind==='err' ? '#d64545' : (kind==='ok' ? '#2e9e5b' : ''); }
+}
+
+function loadMesCreds(){
+  const box=document.getElementById('mesCredBox'); if(!box) return;
+  box.innerHTML='<div class="muted" style="padding:20px">加载中…</div>';
+  fetch('/api/admin/mes_creds',{headers:{'Cache-Control':'no-store'}})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status+'（仅管理员可查看）'); return r.json(); })
+    .then(function(d){
+      if(!d.ok) throw new Error(d.error||'加载失败');
+      const srcs=d.sources||[];
+      const rows=srcs.map(function(s){
+        const cfg = s.from_config
+          ? '<span class="tag">后台已配置</span>'
+          : '<span class="muted">用内置账号</span>';
+        const when = s.updated_at ? esc(s.updated_at)+(s.updated_by?(' · '+esc(s.updated_by)):'') : '—';
+        return '<tr>'
+          +'<td><b>'+esc(s.label)+'</b><div class="muted" style="font-size:11.5px">'+esc(s.key)+'</div></td>'
+          +'<td>'+esc(s.server)+'</td>'
+          +'<td>'+esc(s.dbname)+'</td>'
+          +'<td>'+esc(s.username)+'</td>'
+          +'<td>'+esc(s.mask||'')+'</td>'
+          +'<td>'+cfg+'</td>'
+          +'<td class="muted">'+when+'</td>'
+          +'<td style="white-space:nowrap">'
+            +'<button class="mini" data-mc-edit="'+esc(s.key)+'">修改</button>'
+            +'<button class="mini" data-mc-test="'+esc(s.key)+'">测试连接</button>'
+            +(s.from_config?'<button class="mini warn" data-mc-del="'+esc(s.key)+'">删除配置</button>':'')
+          +'</td></tr>';
+      }).join('');
+      box.innerHTML = '<div class="tscroll"><table id="mcList"><thead><tr>'
+        +'<th>据点</th><th>服务器</th><th>库名</th><th>账号</th><th>密码</th><th>来源</th><th>最近修改</th><th>操作</th>'
+        +'</tr></thead><tbody>'+(rows||'<tr><td colspan="8" class="muted">没有可配置的源库</td></tr>')+'</tbody></table></div>';
+      // 每行右侧的状态位（测试结果）
+      box.querySelectorAll('[data-mc-test]').forEach(function(b){
+        b.addEventListener('click', function(){
+          mcMsg('正在测试 '+b.getAttribute('data-mc-test')+' …');
+          fetch('/api/admin/mes_creds/test',{method:'POST',headers:{'Content-Type':'application/json'},
+              body: JSON.stringify({src:b.getAttribute('data-mc-test')})})
+            .then(function(r){ return r.json(); })
+            .then(function(d){
+              if(d.ok) mcMsg((d.src||'')+' 连接正常（'+d.ms+'ms）：'+d.message, 'ok');
+              else mcMsg((d.src||'')+' 连不上：'+(d.message||d.error||'未知错误'), 'err');
+            })
+            .catch(function(e){ mcMsg('测试失败：'+e.message, 'err'); });
+        });
+      });
+      box.querySelectorAll('[data-mc-edit]').forEach(function(b){
+        b.addEventListener('click', function(){
+          const k=b.getAttribute('data-mc-edit');
+          const s=srcs.filter(function(x){return x.key===k;})[0]||{};
+          MC.src=k; MC.label=s.label||k;
+          document.getElementById('mcTitle').textContent='修改 MES 源库账号 · '+MC.label;
+          document.getElementById('mcServer').value=s.server||'';
+          document.getElementById('mcDb').value=s.dbname||'';
+          document.getElementById('mcUser').value=s.username||'';
+          document.getElementById('mcPass').value='';
+          document.getElementById('mcNote').value='';
+          mcMsg2('');
+          document.getElementById('mcMask').classList.add('open');
+          document.getElementById('mcPass').focus();
+        });
+      });
+      box.querySelectorAll('[data-mc-del]').forEach(function(b){
+        b.addEventListener('click', function(){
+          const k=b.getAttribute('data-mc-del');
+          if(!confirm('确定删除 '+k+' 的后台账号配置？\n删除后会回退到代码里的内置账号。')) return;
+          fetch('/api/admin/mes_creds/delete',{method:'POST',headers:{'Content-Type':'application/json'},
+              body: JSON.stringify({src:k})})
+            .then(function(r){ return r.json(); })
+            .then(function(d){
+              if(d.ok){ mcMsg(k+' 已删除，回退内置账号', 'ok'); loadMesCreds(); }
+              else mcMsg('删除失败：'+(d.error||''), 'err');
+            })
+            .catch(function(e){ mcMsg('删除失败：'+e.message, 'err'); });
+        });
+      });
+    })
+    .catch(function(e){
+      box.innerHTML='<div class="muted" style="padding:16px">'+esc(e.message)+'</div>';
+    });
+}
+
+function loadEtlStatus(){
+  const box=document.getElementById('etlBox'); if(!box) return;
+  fetch('/api/etl/status',{headers:{'Cache-Control':'no-store'}})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      const cells=[];
+      cells.push('<div class="sysCell"><label>数据最新日期</label><code>'+esc(d.data_end||'(空)')+'</code></div>');
+      cells.push('<div class="sysCell"><label>最近一次成功同步</label><code>'+esc(d.last_sync||'（没有成功记录）')+'</code></div>');
+      cells.push('<div class="sysCell"><label>正在同步</label><code>'+(d.running?'是':'否')+'</code></div>');
+      let fail='<div class="sysCell"><label>最近一次失败</label><code>'+esc(d.last_fail||'（无）')+'</code></div>';
+      if(d.last_fail){
+        fail='<div class="sysCell" style="border-color:#e8b0b0;background:#fff8f8"><label style="color:#c0392b">最近一次失败</label>'
+            +'<code style="color:#c0392b">'+esc(d.last_fail)+'</code>'
+            +'<div style="font-size:11.5px;color:#8a5a5a;margin-top:4px">'+esc(d.last_fail_reason||'')+'</div></div>';
+      }
+      // 最近一次手动补数（谁触发的、什么时候、结果）—— 2026-11-16
+      const m=d.manual;
+      let manual='<div class="sysCell"><label>最近一次手动补数</label><code>'+(m?esc(m.started_at||''):'（还没有人手动触发过）')+'</code></div>';
+      if(m){
+        const stTxt = m.state==='running' ? '正在跑…'
+                    : (m.state==='ok' ? '成功' : (m.state==='fail' ? '失败' : (m.state||'')));
+        const col = m.state==='ok' ? '#2e7d32' : (m.state==='fail' ? '#c0392b' : '#c62828');
+        manual='<div class="sysCell'+(m.state==='fail'?'" style="border-color:#e8b0b0;background:#fff8f8':'')+'">'
+            +'<label>最近一次手动补数</label>'
+            +'<code style="color:'+col+'">'+esc(m.started_at||'')+' · '+stTxt+'</code>'
+            +'<div style="font-size:11.5px;color:#8a5a5a;margin-top:4px">'
+            +'触发人：'+esc(m.started_by||'—')+'　窗口：'+esc(m.days||'?')+' 天'
+            +(m.detail?('<br>结果：'+esc(m.detail)):'')+'</div></div>';
+      }
+      box.innerHTML='<div class="sysGrid">'+cells.join('')+manual+fail+'</div>'
+        +'<div class="muted" style="margin-top:8px;font-size:12px">'
+        +'失败时「最近一次成功同步」<b>不会</b>被失败的那次顶掉 —— 看板显示的同步时间一定是真跑成功的时间。</div>';
+      // 正在跑的时候自动刷新（10 分钟左右跑完）
+      if(d.running){ etlPoll=setTimeout(loadEtlStatus, 6000); }
+      else { if(etlPoll){ clearTimeout(etlPoll); etlPoll=null; } }
+      const btn=document.getElementById('etlRerun');
+      if(btn){ btn.disabled=!!d.running; btn.textContent = d.running ? '正在跑日更…' : '立即重跑日更补数'; }
+    })
+    .catch(function(e){ box.innerHTML='<div class="muted">'+esc(e.message)+'</div>'; });
+}
+var etlPoll=null;
+function etlMsg(txt,kind){
+  const el=document.getElementById('etlMsg');
+  if(el){ el.textContent=txt||''; el.style.color = kind==='err' ? '#d64545' : (kind==='ok' ? '#2e9e5b' : ''); }
+}
+document.getElementById('etlRefresh').addEventListener('click', function(){ loadEtlStatus(); });
+document.getElementById('etlRerun').addEventListener('click', function(){
+  const b=this;
+  const days=parseInt(document.getElementById('etlDays').value,10)||14;
+  b.disabled=true; b.textContent='触发中…';
+  etlMsg('正在触发日更补数（'+days+' 天窗口）…');
+  fetch('/api/etl/rerun',{method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({days:days})})
+    .then(function(r){ return r.json().then(function(j){ return {code:r.status, j:j}; }); })
+    .then(function(o){
+      etlMsg(o.j.msg || (o.j.detail||''), o.code===200 && o.j.ok ? 'ok' : 'err');
+      loadEtlStatus();
+    })
+    .catch(function(e){ etlMsg('触发失败：'+e.message, 'err'); b.disabled=false; b.textContent='立即重跑日更补数'; });
+});
+
+document.getElementById('mcCancel').addEventListener('click', function(){
+  document.getElementById('mcMask').classList.remove('open');
+});
+document.getElementById('mcReload').addEventListener('click', function(){ loadMesCreds(); loadEtlStatus(); });
+document.getElementById('mcTestAll').addEventListener('click', function(){
+  mcMsg('正在逐个测试…');
+  fetch('/api/admin/mes_creds/test',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      const rs=d.results||[];
+      if(!rs.length){ mcMsg('没有测到结果：'+(d.error||''), 'err'); return; }
+      const bad=rs.filter(function(x){return !x.ok;});
+      if(bad.length){
+        mcMsg(bad.length+' 个源库连不上：'+bad.map(function(x){return x.label+'（'+(x.message||'').slice(0,110)+'）';}).join('；'), 'err');
+      }else{
+        mcMsg('全部 '+rs.length+' 个源库连接正常 ✔', 'ok');
+      }
+    })
+    .catch(function(e){ mcMsg('测试失败：'+e.message, 'err'); });
+});
+document.getElementById('mcTest').addEventListener('click', function(){
+  const sv=document.getElementById('mcServer').value.trim();
+  const db=document.getElementById('mcDb').value.trim();
+  const us=document.getElementById('mcUser').value.trim();
+  const pw=document.getElementById('mcPass').value;
+  if(!sv||!db||!us||!pw){ mcMsg2('服务器 / 库名 / 账号 / 密码 都要填', 'err'); return; }
+  mcMsg2('正在测试…');
+  fetch('/api/admin/mes_creds/test',{method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({server:sv, dbname:db, username:us, password:pw})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.ok) mcMsg2('连接正常（'+d.ms+'ms）：'+d.message, 'ok');
+      else mcMsg2('连不上：'+(d.message||d.error||'未知错误'), 'err');
+    })
+    .catch(function(e){ mcMsg2('测试失败：'+e.message, 'err'); });
+});
+document.getElementById('mcSave').addEventListener('click', function(){
+  const sv=document.getElementById('mcServer').value.trim();
+  const db=document.getElementById('mcDb').value.trim();
+  const us=document.getElementById('mcUser').value.trim();
+  const pw=document.getElementById('mcPass').value;
+  const nt=document.getElementById('mcNote').value.trim();
+  if(!sv||!db||!us||!pw){ mcMsg2('服务器 / 库名 / 账号 / 密码 都要填', 'err'); return; }
+  if(!nt){ mcMsg2('请填「改动说明」（会记进审计日志）', 'err'); return; }
+  fetch('/api/admin/mes_creds',{method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({src:MC.src, server:sv, dbname:db, username:us, password:pw, note:nt})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.ok){
+        document.getElementById('mcMask').classList.remove('open');
+        mcMsg(MC.label+' 的账号已保存并立即生效', 'ok');
+        loadMesCreds();
+      }else mcMsg2('保存失败：'+(d.error||'未知错误'), 'err');
+    })
+    .catch(function(e){ mcMsg2('保存失败：'+e.message, 'err'); });
+});
+
+// 切到「系统运维」页签时才加载（避免每次开页都去连库）
+(function(){
+  const orig=window.showTab;
+  window.addEventListener('hashchange', function(){
+    if((location.hash||'').replace(/^#/,'')) { /* showTab 由上面的处理器调用 */ }
+  });
+  const obs=new MutationObserver(function(){
+    const p=document.getElementById('pane-sys');
+    if(p && !p.hidden){ loadMesCreds(); loadEtlStatus(); }
+  });
+  document.addEventListener('DOMContentLoaded', function(){
+    const p=document.getElementById('pane-sys');
+    if(p) obs.observe(p,{attributes:true,attributeFilter:['hidden']});
+  });
+})();
+
+// 停在「意见反馈」页签时 60 秒自动刷新（新反馈不用手动刷页面）
+setInterval(function(){
+  const el=document.getElementById('pane-fb');
+  if(el && !el.hidden) fbLoad();
+}, 60000);
+</script>
+</body>
+</html>

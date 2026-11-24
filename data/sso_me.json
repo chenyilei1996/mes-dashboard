@@ -1,0 +1,12 @@
+{
+  "admin": true,
+  "name": "测试环境",
+  "loginName": "staging",
+  "dept": "预发",
+  "divisions": [
+    "*"
+  ],
+  "workshops": [],
+  "perms": [],
+  "fake": true
+}

@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "error": "unknown division: {d}（可选 ['div_a', 'div_b', 'div_c']）",
+  "worker_python": "C:\\Python311\\python.exe",
+  "cached": false,
+  "start": "2026-04-01",
+  "end": "2026-11-23"
+}

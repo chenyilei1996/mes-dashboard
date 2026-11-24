@@ -1,0 +1,22 @@
+[
+  {
+    "key": "plant",
+    "label": "全厂"
+  },
+  {
+    "key": "div_b",
+    "label": "B事业部"
+  },
+  {
+    "key": "div_a",
+    "label": "A事业部"
+  },
+  {
+    "key": "div_c",
+    "label": "C事业部"
+  },
+  {
+    "key": "div_d",
+    "label": "D事业部"
+  }
+]

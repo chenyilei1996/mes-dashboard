@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>登录 · MES 运营看板</title>
+<style>
+ *{box-sizing:border-box}
+ body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
+       font-family:"Microsoft YaHei","微软雅黑",system-ui,sans-serif;
+       background:linear-gradient(135deg,#0f2557 0%,#1e3a8a 55%,#2748a8 100%)}
+ .card{width:344px;background:#fff;border-radius:12px;padding:34px 36px 28px;
+        box-shadow:0 18px 44px rgba(6,20,52,.34)}
+ h1{margin:0;font-size:19px;color:#0f2557;letter-spacing:.5px}
+ .sub{margin:6px 0 22px;font-size:12.5px;color:#7b8794}
+ label{display:block;font-size:12.5px;color:#48566b;margin:0 0 6px}
+ input{width:100%;padding:10px 12px;margin-bottom:14px;border:1px solid #cfd8e3;
+        border-radius:7px;font-size:14px;font-family:inherit;color:#1b2733}
+ input:focus{outline:none;border-color:#1e3a8a;box-shadow:0 0 0 3px rgba(30,58,138,.12)}
+ button{width:100%;padding:11px;border:0;border-radius:7px;background:#1e3a8a;color:#fff;
+         font-size:15px;font-family:inherit;letter-spacing:2px;cursor:pointer}
+ button:hover{background:#2748a8}
+ .err{background:#fdecec;color:#c0392b;font-size:12.5px;padding:9px 11px;
+       border-radius:6px;margin-bottom:14px}
+ .foot{margin-top:18px;padding-top:14px;border-top:1px solid #eef2f7;
+        font-size:11.5px;color:#95a2b3;line-height:1.7}
+</style></head><body>
+<form class="card" method="post" action="/sso/oa/verify" id="f" autocomplete="on">
+  <h1>MES 运营看板</h1>
+  <p class="sub">请使用蓝凌 OA 账号登录</p>
+  
+  <label>OA 账号</label>
+  <input name="username" id="u" placeholder="OA 账号（手机号），如 134566789012"
+         autocomplete="username" required autofocus>
+  <label>密码</label>
+  <input name="password" type="password" placeholder="OA 密码"
+         autocomplete="current-password" required>
+  <input type="hidden" name="nonce" value="vE03OQHt4RMAt3TuaG-wMmqk">
+  <input type="hidden" name="next" value="http://192.168.2.149:8124/monthly">
+  <button type="submit">登 录</button><div style="display:flex;align-items:center;gap:10px;margin:16px 0 0"><span style="flex:1;height:1px;background:#eef2f7"></span><span style="font-size:11.5px;color:#95a2b3">或</span><span style="flex:1;height:1px;background:#eef2f7"></span></div><a href="/sso/casdoor?next=http://192.168.2.149:8124/monthly" style="display:block;text-align:center;margin-top:14px;padding:11px;border-radius:7px;background:#0f9d58;color:#fff;font-size:15px;letter-spacing:1px;text-decoration:none">企业统一认证登录</a>
+  <div class="foot">
+    账号密码由看板转交蓝凌 OA 校验后确认身份，<br>
+    只在内存中处理，<b>不保存、不写日志</b>；登录后 30 天内免登录。
+  </div>
+</form>
+</body></html>

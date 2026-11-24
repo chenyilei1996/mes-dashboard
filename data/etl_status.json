@@ -1,0 +1,1 @@
+{"running":false,"last_sync":"2026-11-16 12:04:25","last_fail":"2026-11-16 12:01:15","last_fail_reason":"日更退出码 1：抽取过程中被中断（机器重启或进程被结束），这次没跑完。","data_end":"2026-11-23","manual":{"started_at":"2026-11-16 12:02:54","started_ts":1794801774.0303836,"started_by":"env-admin","days":14,"tag":"manual","state":"ok","finished_at":"2026-11-16 12:04:25","detail":"全部源库抽取成功，看板数据已更新"}}

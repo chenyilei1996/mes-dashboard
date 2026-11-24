@@ -1,0 +1,292 @@
+{
+  "start": "2026-04-01",
+  "end": "2026-11-23",
+  "prev_start": "2025-08-07",
+  "prev_end": "2026-03-31",
+  "use_cmp": true,
+  "cols": [
+    {
+      "key": "div_b",
+      "label": "B事业部"
+    },
+    {
+      "key": "div_a",
+      "label": "A事业部"
+    },
+    {
+      "key": "div_c",
+      "label": "C事业部"
+    },
+    {
+      "key": "plant",
+      "label": "全厂"
+    }
+  ],
+  "rows": [
+    {
+      "metric": "plan_completion",
+      "label": "计划达成率",
+      "unit": "%",
+      "target": 85.0,
+      "redline": 80.0,
+      "direction": 1,
+      "cells": [
+        {
+          "key": "div_b",
+          "avg": 78.76,
+          "prev": null,
+          "delta": null,
+          "status": "bad",
+          "n": 232
+        },
+        {
+          "key": "div_a",
+          "avg": 41.92,
+          "prev": null,
+          "delta": null,
+          "status": "bad",
+          "n": 237
+        },
+        {
+          "key": "div_c",
+          "avg": 78.45,
+          "prev": null,
+          "delta": null,
+          "status": "bad",
+          "n": 227
+        },
+        {
+          "key": "plant",
+          "avg": 61.57,
+          "prev": null,
+          "delta": null,
+          "status": "bad",
+          "n": 696
+        }
+      ]
+    },
+    {
+      "metric": "kitting",
+      "label": "工单齐套率",
+      "unit": "%",
+      "target": 70.0,
+      "redline": 65.0,
+      "direction": 1,
+      "cells": [
+        {
+          "key": "div_b",
+          "avg": 46.39,
+          "prev": null,
+          "delta": null,
+          "status": "bad",
+          "n": 228
+        },
+        {
+          "key": "div_a",
+          "avg": 60.7,
+          "prev": null,
+          "delta": null,
+          "status": "bad",
+          "n": 237
+        },
+        {
+          "key": "div_c",
+          "avg": 23.14,
+          "prev": null,
+          "delta": null,
+          "status": "bad",
+          "n": 230
+        },
+        {
+          "key": "plant",
+          "avg": 47.56,
+          "prev": null,
+          "delta": null,
+          "status": "bad",
+          "n": 695
+        }
+      ]
+    },
+    {
+      "metric": "fai",
+      "label": "首件及时率",
+      "unit": "%",
+      "target": 95.0,
+      "redline": 90.0,
+      "direction": 1,
+      "cells": [
+        {
+          "key": "div_b",
+          "avg": 90.65,
+          "prev": null,
+          "delta": null,
+          "status": "warn",
+          "n": 217
+        },
+        {
+          "key": "div_a",
+          "avg": 90.93,
+          "prev": null,
+          "delta": null,
+          "status": "warn",
+          "n": 223
+        },
+        {
+          "key": "div_c",
+          "avg": 94.92,
+          "prev": null,
+          "delta": null,
+          "status": "warn",
+          "n": 220
+        },
+        {
+          "key": "plant",
+          "avg": 92.19,
+          "prev": null,
+          "delta": null,
+          "status": "warn",
+          "n": 660
+        }
+      ]
+    },
+    {
+      "metric": "patrol",
+      "label": "巡检执行率",
+      "unit": "%",
+      "target": 95.0,
+      "redline": 90.0,
+      "direction": 1,
+      "cells": [
+        {
+          "key": "div_b",
+          "avg": 95.08,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 224
+        },
+        {
+          "key": "div_a",
+          "avg": 97.97,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 225
+        },
+        {
+          "key": "div_c",
+          "avg": 97.01,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 223
+        },
+        {
+          "key": "plant",
+          "avg": 96.96,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 672
+        }
+      ]
+    },
+    {
+      "metric": "fpy",
+      "label": "生产直通率",
+      "unit": "%",
+      "target": 90.0,
+      "redline": 85.0,
+      "direction": 1,
+      "cells": [
+        {
+          "key": "div_b",
+          "avg": 98.28,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 222
+        },
+        {
+          "key": "div_a",
+          "avg": 95.57,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 225
+        },
+        {
+          "key": "div_c",
+          "avg": 95.12,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 223
+        },
+        {
+          "key": "plant",
+          "avg": 95.97,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 670
+        }
+      ]
+    },
+    {
+      "metric": "oee",
+      "label": "注塑OEE",
+      "unit": "%",
+      "target": 50.0,
+      "redline": 45.0,
+      "direction": 1,
+      "cells": [
+        {
+          "key": "div_b",
+          "avg": 40.93,
+          "prev": null,
+          "delta": null,
+          "status": "bad",
+          "n": 237
+        },
+        {
+          "key": "div_a",
+          "avg": 59.46,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 237
+        },
+        {
+          "key": "div_c",
+          "avg": 52.53,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 237
+        },
+        {
+          "key": "plant",
+          "avg": 50.97,
+          "prev": null,
+          "delta": null,
+          "status": "ok",
+          "n": 711
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "ok": 8,
+    "warn": 3,
+    "bad": 7,
+    "na": 0,
+    "total": 18
+  },
+  "plant_summary": {
+    "ok": 3,
+    "warn": 1,
+    "bad": 2,
+    "na": 0
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "ok": false,
+  "error": "metric 仅支持 fai（首件及时率）/ patrol（巡检执行率）/ plan_labor（排产工时对比）"
+}
